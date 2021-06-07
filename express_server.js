@@ -2,10 +2,12 @@ const express = require('express');
 const app = express();
 app.set("view", "ejs");
 const PORT = 8080;
+
 const urlDatabase = {
   "b2xVn2":"http://www.lighthouselabs.ca",
   "9sm5xK":"http://www/google.ca"
 };
+
 app.get("/", (request, response)=>{
   response.send("hello");
 });
@@ -20,7 +22,7 @@ app.get("/urls.JSON", (req, res)=>{
 
 app.get("/hello",(req,res)=>{
 res.send("<html><body> Hello <b> World </b></body></html>");
-})
+});
 
 app.get("/urls", (req,res)=>{
 const templateVars = {urls: urlDatabase};
