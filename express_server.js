@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
-app.set("view", "ejs");
+app.set("view engine", "ejs");
 const PORT = 8080;
-
+//short URL: long URL
 const urlDatabase = {
   "b2xVn2":"http://www.lighthouselabs.ca",
   "9sm5xK":"http://www/google.ca"
@@ -20,11 +20,7 @@ app.get("/urls.JSON", (req, res)=>{
   res.json(urlDatabase);
 });
 
-app.get("/hello",(req,res)=>{
-res.send("<html><body> Hello <b> World </b></body></html>");
-});
-
 app.get("/urls", (req,res)=>{
 const templateVars = {urls: urlDatabase};
-res.render("urls_index", templateVars);
+res.render("urls_index", templateVars); //file name in views, the data to show on the webpage
 });
