@@ -10,7 +10,7 @@
 </head>
 <%- include('partials/_header.ejs') %>
 <body>
-  
+  <!-- <form method="POST" action="/urls/9sm5xK/delete">...</form> -->
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -18,13 +18,15 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td><%= url %></td>
+            <form method="POST" action="/urls/9sm5xK/delete"><td><%= url %></td></form>
             <td><%= urls[url] %></td>
+            <td> <button type="button">Delete</button> </td>
           </tr>
         <% } %>
       </tbody>
