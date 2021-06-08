@@ -12,6 +12,10 @@ const urlDatabase = {
   "9sm5xK":"http://www/google.ca"
 };
 
+const users = { 
+
+};
+
 app.get("/", (request, response)=>{
   response.send("hello");
 });
@@ -58,4 +62,8 @@ return Math.random().toString(36).substring(7);
 //registration
 app.get("/register", (req, res)=>{
 res.render("registration");
+});
+
+app.post("/register", (req, res)=>{
+
 });
