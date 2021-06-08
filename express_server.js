@@ -16,6 +16,13 @@ const users = {
 
 };
 
+function generateRandomString() {
+  return Math.random().toString(36).substring(7);
+  }
+  
+
+console.log(users);
+
 app.get("/", (request, response)=>{
   response.send("hello");
 });
@@ -56,14 +63,19 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-function generateRandomString() {
-return Math.random().toString(36).substring(7);
-}
+
 //registration
 app.get("/register", (req, res)=>{
 res.render("registration");
 });
 
 app.post("/register", (req, res)=>{
-
+const userId = generateRandomString();
+const newUser = {'id': userId,
+                'email': req.body.email,
+                'password': req.body.password};
+//users = userId ;
+users[userId] = newUser ;
+//console.log(req.body);
+console.log("user obj has now", users);
 });
