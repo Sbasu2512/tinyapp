@@ -52,7 +52,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
 function generateRandomString() {
 return Math.random().toString(36).substring(7);
 }
+//registration
+app.get("/register", (req, res)=>{
+res.render("registration");
+});
