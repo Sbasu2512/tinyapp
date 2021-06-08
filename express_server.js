@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(require('body-parser').json());
 app.set("view engine", "ejs");
 const PORT = 8080;
 //short URL: long URL
@@ -28,14 +29,22 @@ const templateVars = {urls: urlDatabase};
 res.render("urls_index", templateVars); //file name in views, the data to show on the webpage
 });
 
-app.get("urls/new", (req, res)=>{
-res.render("urls_new");
+app.post("/urls", (req, res) => {
+  const randomString = generateRandomString();
+  console.log(req.body);  // Log the POST request body to the console
+  urlDatabase.randomString = req.body;  
+  res.send("Being redirected");  
+  res.redirect(`/urls/:${randomString}`)       
+  app.get(`/urls/:${randomString}`, (req, res) => {
+    res.render(`urls_index`)
+  });
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
-});
+
+
+app.get("urls/new", (req, res)=>{
+  res.render("urls_new");
+  });
 
 app.get("/urls/:shortURL", (req,res)=>{
 const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] }
@@ -43,5 +52,5 @@ res.render("urls_show", templateVars);
 });
 
 function generateRandomString() {
-
+return Math.random().toString(36).substring(7);
 }
