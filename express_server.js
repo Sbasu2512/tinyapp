@@ -3,14 +3,27 @@ const app = express();
 const bodyParser = require("body-parser");
 
 app.use(express.urlencoded({extended: true}));
+
 //app.use(require('body-parser').json());
 app.set("view engine", "ejs");
 const PORT = 8080;
+
 //short URL: long URL
 const urlDatabase = {
   "b2xVn2":"http://www.lighthouselabs.ca",
   "9sm5xK":"http://www/google.ca"
 };
+
+const users = { 
+
+};
+
+function generateRandomString() {
+  return Math.random().toString(36).substring(7);
+  }
+  
+
+console.log(users);
 
 app.get("/", (request, response)=>{
   response.send("hello");
@@ -57,3 +70,24 @@ function generateRandomString() {
 return Math.random().toString(36).substring(7);
 }
 
+app.post("/urls/:shortURL/delete", (req, res)=>{
+  console.log(req.body);
+  delete urlDatabase[shortURL];
+  res.redirect("/urls")
+});
+
+// //registration
+// app.get("/register", (req, res)=>{
+// res.render("registration");
+// });
+
+// app.post("/register", (req, res)=>{
+// const userId = generateRandomString();
+// const newUser = {'id': userId,
+//                 'email': req.body.email,
+//                 'password': req.body.password};
+// //users = userId ;
+// users[userId] = newUser ;
+// //console.log(req.body);
+// console.log("user obj has now", users);
+// });
