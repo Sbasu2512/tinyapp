@@ -4,12 +4,16 @@ const PORT = 8080; // default port 8080
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(express.urlencoded({extended: true}));
+app.use(cookiePayParsrser());
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+//Create a global object called users which will be used to store and access the users in the app.
+const users = { 
+  
+}
 // simulate generating unique shortURL - 6 random alphanumeric characters
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
