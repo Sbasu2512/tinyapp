@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 
 app.use(express.urlencoded({extended: true}));
 //app.use(require('body-parser').json());
@@ -64,18 +65,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 
-//registration
-app.get("/register", (req, res)=>{
-res.render("registration");
-});
+// //registration
+// app.get("/register", (req, res)=>{
+// res.render("registration");
+// });
 
-app.post("/register", (req, res)=>{
-const userId = generateRandomString();
-const newUser = {'id': userId,
-                'email': req.body.email,
-                'password': req.body.password};
-//users = userId ;
-users[userId] = newUser ;
-//console.log(req.body);
-console.log("user obj has now", users);
-});
+// app.post("/register", (req, res)=>{
+// const userId = generateRandomString();
+// const newUser = {'id': userId,
+//                 'email': req.body.email,
+//                 'password': req.body.password};
+// //users = userId ;
+// users[userId] = newUser ;
+// //console.log(req.body);
+// console.log("user obj has now", users);
+// });
