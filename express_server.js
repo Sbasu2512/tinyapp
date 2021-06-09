@@ -66,21 +66,31 @@ app.post('/urls/:shortURL', (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.longURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 });
+
 // uses shortURL to redirect to longURL
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
+
 // remove shortURL then redirect back to /urls
 app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
+
 // allows user to login with a username - redirects to /urls
 app.post('/login', (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
+
+// allows users to logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
