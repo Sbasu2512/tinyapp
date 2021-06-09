@@ -33,7 +33,8 @@ app.get('/hello', (req, res) => {
 
 // shows the shortURL longURL pairs
 app.get('/urls', (req, res) => {
-  console.log("cookies: ", req.cookies.userid); //can not play with it right after writing cookies
+  //console.log("cookies: ", req.cookies.userid); 
+  //can not play with it right after writing cookies
   //user is one deep into user object. it now stores the random string generated and stored into the cookies.
   user = users[req.cookies.userid]; //we take the name not the value from res.cookie()
   const templateVars = { 
@@ -98,24 +99,25 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // allows user to login with a username - redirects to /urls
 app.post('/login', (req, res) => {
-  res.cookie('username', req.body.username);
+  res.cookie('userid', req.body.userid);
   res.redirect('/urls');
 });
 
 // allows users to logout
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('userid');
   res.redirect('/urls');
 });
 //which returns the template regitration.ejs
 app.get('/register', (req, res)=>{
-  user = users[req.cookies.userid]  //we are getting the userid cookie. name should be same all over
-  //console.log(user);
+  //we are getting the userid cookie. name should be same all over
+  user = users[req.cookies.userid]
+  //console.log("user  value is :", user);
   const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
     username: req.cookies.userid,
-    user: user
+    user: user   //user = users[req.cookies.userid]
   }
   //resgitration == view, templateVars == local object for this specific view
 res.render('registration', templateVars); //res.render(view [, locals] [, callback])
