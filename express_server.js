@@ -104,6 +104,15 @@ app.get('/register', (req, res)=>{
   //resgitration == view, templateVars == local object for this specific view
 res.render('registration', templateVars); //res.render(view [, locals] [, callback])
 });
+//Registering New Users
+app.post("/register", (req, res)=>{
+const userId = generateRandomString();
+const newUser = {'id': userId,               //create a new object so we do not have to go....
+                'email': req.body.email,    //....two levels deep of the get go.
+                'password': req.body.password};
+users[userId] = newUser ;
+console.log("user obj has now", users); //update users everytime :)
+}); 
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
