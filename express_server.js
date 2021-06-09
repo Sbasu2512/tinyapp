@@ -101,7 +101,8 @@ app.get('/register', (req, res)=>{
     longURL: urlDatabase[req.params.shortURL],
     username: req.cookies.username
   };
-res.render('registration');
+  //resgitration == view, templateVars == local object for this specific view
+res.render('registration', templateVars); //res.render(view [, locals] [, callback])
 });
 
 app.listen(PORT, () => {
