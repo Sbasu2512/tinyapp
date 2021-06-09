@@ -65,16 +65,26 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
 function generateRandomString() {
 return Math.random().toString(36).substring(7);
 }
-
+//req.params => u can access the variables within your routes. so basically it will let me take the ":shortURL" from line 73 to line 75.
 app.post("/urls/:shortURL/delete", (req, res)=>{
-  console.log(req.body);
-  delete urlDatabase[shortURL];
-  res.redirect("/urls")
+  //console.log(req.params.shortURL);
+  delete urlDatabase[req.params.shortURL];        
+  res.redirect("/urls");
 });
+
+app.post("/urls/:id/update",(res,req)=>{
+  console.log(res.params);
+  urlDatabase[req.params.id] = req.params.shortURL.id
+});
+
+
+// app.post("", (req, res)=>{
+// console.log(req.body);
+// console.log(req.params);
+// });
 
 // //registration
 // app.get("/register", (req, res)=>{
