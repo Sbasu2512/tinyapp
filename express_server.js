@@ -77,7 +77,7 @@ app.post("/urls/:shortURL/delete", (req, res)=>{
 
 app.post("/urls/:id/update",(res,req)=>{
   console.log(res.params);
-  urlDatabase[req.params.id] = req.params.shortURL.id
+  urlDatabase[req.params.id] = req.params.id
 });
 
 
