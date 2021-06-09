@@ -1,9 +1,10 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
-app.use(express.urlencoded({extended: true}));
-
+app.use(express.urlencoded({extended: true})); //body parser
+app.use(cookieParser());
 //app.use(require('body-parser').json());
 app.set("view engine", "ejs");
 const PORT = 8080;
@@ -75,15 +76,31 @@ app.post("/urls/:shortURL/delete", (req, res)=>{
   res.redirect("/urls");
 });
 
-app.post("/urls/:id/update",(res,req)=>{
-  console.log(res.params);
-  urlDatabase[req.params.id] = req.params.id
+app.post("/urls/:id/update",(req,res)=>{
+  //console.log(req.params);
+  //console.log(req.body);
+  if(urlDatabase[req.params.id] && req.body.longURL)
+  {
+    urlDatabase[req.params.id] = req.body.longURL
+    res.redirect("/urls");
+  }
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    errorMessage: "Please complete all fields"
+}
+  res.render("urls_show",templateVars);
 });
 
 
 // app.post("", (req, res)=>{
 // console.log(req.body);
 // console.log(req.params);
+// });
+
+// //registration
+// app.get("/register", (req, res)=>{
+// res.render("registration");
 // });
 
 // //registration
@@ -100,4 +117,5 @@ app.post("/urls/:id/update",(res,req)=>{
 // users[userId] = newUser ;
 // //console.log(req.body);
 // console.log("user obj has now", users);
+// });
 // });
