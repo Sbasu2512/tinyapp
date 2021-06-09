@@ -33,18 +33,29 @@ app.get('/hello', (req, res) => {
 
 // shows the shortURL longURL pairs
 app.get('/urls', (req, res) => {
+  console.log("cookies: ", req.cookies.userid); //can not play with it right after writing cookies
+  //user is one deep into user object. it now stores the random string generated and stored into the cookies.
+  user = users[req.cookies.userid]; //we take the name not the value from res.cookie()
   const templateVars = { 
-    urls: urlDatabase,
-    username: req.cookies.username
-  };
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username,
+    user: user,
+    urls: urlDatabase                   
+  }
   res.render('urls_index', templateVars);
 });
 
 // for creating new shortURLs
 app.get('/urls/new', (req, res) => {
-  const templateVars = {
-    username: req.cookies.username
-  };
+  user = users[req.cookies.userid]
+  const templateVars = { 
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username,
+    user: user
+  }
+  
   res.render('urls_new', templateVars);
 });
 
@@ -57,11 +68,13 @@ app.post('/urls', (req, res) => {
 
 // shows user their shortURL
 app.get('/urls/:shortURL', (req, res) => {
+  user = users[req.cookies.userid]
   const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies.username
-  };
+    username: req.cookies.username,
+    user: user
+  }
   res.render('urls_show', templateVars);
 });
 
@@ -96,14 +109,18 @@ app.post('/logout', (req, res) => {
 });
 //which returns the template regitration.ejs
 app.get('/register', (req, res)=>{
+  user = users[req.cookies.userid]  //we are getting the userid cookie. name should be same all over
+  //console.log(user);
   const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies.username
-  };
+    username: req.cookies.userid,
+    user: user
+  }
   //resgitration == view, templateVars == local object for this specific view
 res.render('registration', templateVars); //res.render(view [, locals] [, callback])
 });
+
 //Registering New Users
 app.post("/register", (req, res)=>{
 const userId = generateRandomString();
@@ -111,7 +128,9 @@ const newUser = {'id': userId,               //create a new object so we do not 
                 'email': req.body.email,    //....two levels deep of the get go.
                 'password': req.body.password};
 users[userId] = newUser ;
-console.log("user obj has now", users); //update users everytime :)
+//console.log("user obj has now", users); //update users everytime :)
+res.cookie('userid', userId);  //set a cookie with name(key), value
+res.redirect('/urls');  //redirect 
 }); 
 
 app.listen(PORT, () => {
