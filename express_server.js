@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
-app.use(cookiePayParsrser());
+app.use(cookieParser());
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
