@@ -13,7 +13,7 @@ const urlDatabase = {
 //Create a global object called users which will be used to store and access the users in the app.
 const users = { 
   
-}
+};
 // simulate generating unique shortURL - 6 random alphanumeric characters
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
@@ -93,6 +93,15 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('/urls');
+});
+//which returns the template regitration.ejs
+app.get('/register', (req, res)=>{
+  const templateVars = { 
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username
+  };
+res.render('registration');
 });
 
 app.listen(PORT, () => {
