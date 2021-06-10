@@ -79,7 +79,7 @@ app.post("/urls", (req, res) => {
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.cookies.userid];
-  console.log(user);
+  console.log("line 82: user is ",user);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
@@ -156,7 +156,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   //we are getting the userid cookie. name should be same all over
   let user = users[req.cookies.userid];
-  console.log("req.cookies.userid line 159 :", req.cookies.userid);
+  //console.log("req.cookies.userid line 159 :", req.cookies.userid);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
