@@ -116,12 +116,7 @@ app.post("/login", (req, res) => {
   const userLogin = req.body;
 
   if (userLogin.email === "admin" && userLogin.password === "admin") {
-    //   const templateVars = {
-    //   shortURL: req.params.shortURL,
-    //   longURL: urlDatabase[req.params.shortURL],
-    //   userid: req.cookies.userid,
-    //   user: user,
-    // };
+    res.cookie("userid", 'admin');
     return res.render("user", {users});
   }
   // check if username exists
@@ -130,6 +125,7 @@ app.post("/login", (req, res) => {
     if (users[id].email === userLogin.email) {
       console.log(users[id]);
       user = users[id]; //id = random string
+      
       break;
     }
   }
