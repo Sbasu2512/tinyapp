@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
 //Create a global object called users which will be used to store and access the users in the app.
@@ -64,8 +64,10 @@ app.get("/urls/new", (req, res) => {
     userid: req.cookies.userid,
     user: user,
   };
-
-  res.render("urls_new", templateVars);
+  if(user !== 'undefined' && user){
+    res.render("urls_new", templateVars);
+  }
+  res.redirect("/login");
 });
 
 // creates the shortURL and redirects to show user their newly created link
@@ -187,7 +189,7 @@ app.get("/register", (req, res) => {
 
 //Registering New Users
 app.post("/register", (req, res) => {
-  const errorMsg = "User email exists";
+  const errorMsg = "User email exists, please login";
   const userId = generateRandomString();
   const newUser = {
     id: userId, //create a new object so we do not have to go....
@@ -207,7 +209,7 @@ app.post("/register", (req, res) => {
     // if email matches
     if (user.email === userLogin.email) {
       //this log will appear in the server terminal, NOT on the browser
-      console.log("user already exists");
+      //console.log("user already exists");
       // redirect to homepage
       // early return to stop the function
       return res.status(403).send(errorMsg);
