@@ -56,7 +56,7 @@ app.get("/urls", (req, res) => {
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   let user = users[req.cookies.userid];
-  console.log("line 63: ", req.cookies.userid);
+ //console.log("line 63: ", req.cookies.userid);
   // console.log("line 64: ",req.cookies.username);
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -78,7 +78,7 @@ app.post("/urls", (req, res) => {
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.cookies.userid];
-  console.log("line 82: user is ", user);
+ // console.log("line 82: user is ", user);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
@@ -89,7 +89,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 // updates URL - longURL edited for specified shortURL
-app.post("/urls/:shortURL", (req, res) => {
+app.post("/urls/:shortURL/update", (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.longURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 });
@@ -105,22 +105,38 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
+// //update feature
+// app.post("/urls/:shortURL/update", (req, res) => {
+//    urlDatabase[req.params.shortURL] = req.params.longURL;
+//   res.redirect("/urls");
+// });
 //get the login page to let user login
 app.get("/login", (req, res) => {
   res.render("login", {});
 });
+
+app.get("/user", (req, res)=>{
+  res.render("user",{users});
+})
 // allows user to login with a username - redirects to /urls
 app.post("/login", (req, res) => {
   //check if login credentials belong to admin
   // accept user information
   const userLogin = req.body;
-
+  let user;
   if (userLogin.email === "admin" && userLogin.password === "admin") {
+    user = users['admin'];
+    const templateVars = {
+      //shortURL: req.params.shortURL,
+     // longURL: urlDatabase[req.params.shortURL],
+      user: user,
+      userid: user.userid,
+      users: users
+    };
     res.cookie("userid", 'admin');
-    return res.render("user", {users});
+    return res.render("user", templateVars);
   }
   // check if username exists
-  let user;
   for (let id in users) {
     if (users[id].email === userLogin.email) {
       console.log(users[id]);
@@ -135,7 +151,7 @@ app.post("/login", (req, res) => {
     // if password matches
     if (user.password === userLogin.password) {
       //this log will appear in the server terminal, NOT on the browser
-      console.log("passwords match!");
+      console.log(`${req.params.userid} logged in!`);
       // set cookie with name = "userid" and value = users name (lowercase)
       res.cookie("userid", userLogin.userid);
       // redirect to homepage
