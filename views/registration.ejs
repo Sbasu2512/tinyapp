@@ -7,14 +7,15 @@
 </head>
 <%- include('partials/_header.ejs') %>
 <body>
-  <div class="form-group mb-2"></div>
- 
-  <form action="/register" method="POST"  class="form-control"> 
+  <div class="form-group mb-2">
+  <form action="/register" method="POST"  > 
+    <fieldset>
       <label for="email"> Email </label> 
       <input type ="text" name="email" class="form-control" style="width: 300px; margin: 1em" required/> <br/>
       <label for="password"> Password </label>
       <input type ="password" name="password" class="form-control" style="width: 300px; margin: 1em" required/>  <br/>
       <input type="submit" value="Register" class="btn btn-primary" />
   </form>
+</fieldset>
 </div>
 <%- include('partials/_footer.ejs') %>
