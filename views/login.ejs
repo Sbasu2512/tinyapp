@@ -1,0 +1,20 @@
+<%- include('partials/_header.ejs') %>
+
+  <body>
+    <div>
+
+      <form class="form-control" action="/login" method="POST">
+        <div class="form-group mb-2">
+          <input class="form-control" type="text" name="email" placeholder="jdoe@microsoft.com"
+            style="width: 300px; margin: 1em" required>
+          <input class="form-control" type="password" name="password" placeholder="password must be alphanumeric"
+            style="width: 300px; margin: 1em" required>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+      <!--
+  <form class="form-inline" action="/logout" method="POST">
+    <button type="submit" class="btn btn-primary" style="margin: 1em">Logout</button>
+  </form> -->
+    </div>
+  </body>
