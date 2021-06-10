@@ -11,17 +11,26 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 //Create a global object called users which will be used to store and access the users in the app.
-const users = {};
+const users = {'admin':{
+                        id:'admin',
+                        email: 'admin',  
+                        password: 'admin'
+}};
 
+//console.log("global users object contains: ", users);
 //emailLooker function to check if email exist in users database
-let emailLooker = (email) =>{
-  for(let user in users){
-    if(user.email === email){
-      return true;
-    }
-  }
-  return false;
-};
+// let emailLooker = (email) =>{
+//   console.log(email);
+//   console.log(" inside email Looker");
+//   for(let user in users){
+//     console.log("inside for loop of users")
+//     if(user.email === email){
+//       console.log("user is: ", user);
+//       return user;
+//     }
+//   }
+//   return false;
+// };
 
 // simulate generating unique shortURL - 6 random alphanumeric characters
 const generateRandomString = function () {
@@ -45,11 +54,12 @@ app.get("/urls", (req, res) => {
   //console.log("cookies: ", req.cookies.userid);
   //can not play with it right after writing cookies
   //user is one deep into user object. it now stores the random string generated and stored into the cookies.
+  console.log("line 48: ",req.cookies.userid);
   let user = users[req.cookies.userid]; //we take the name not the value from res.cookie()
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies.username,
+    userid: req.cookies.userid,
     user: user,
     urls: urlDatabase,
   };
@@ -59,10 +69,12 @@ app.get("/urls", (req, res) => {
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   let user = users[req.cookies.userid];
+  console.log("line 63: ",req.cookies.userid);
+ // console.log("line 64: ",req.cookies.username);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies.username,
+    userid: req.cookies.userid,
     user: user,
   };
 
@@ -110,24 +122,21 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/login", (req, res)=>{
   res.render("login",{});
 });
-
 // allows user to login with a username - redirects to /urls
 app.post("/login", (req, res) => {
+  //check if login credentials belong to admin
   // accept user information
-  //console.log(req.body);
   const userLogin = req.body ;
-  //console.log("User email to login was: ",userLogin.email);
-  //console.log("users is: ",users);
   // check if username exists
   let user ;  
-  for(let userid in users){
-    if(users[userid].email === userLogin.email){
-       user = users[userid]   //userid = random string
+  for(let id in users){
+    if(users[id].email === userLogin.email){
+      console.log(users[id]);
+       user = users[id]   //id = random string
       break;
     } 
   }
   //const user = users[userLogin.email] //checking for the email key of the user obj
-  //console.log("user is: ",user);
   // if user exists
   if (user) {
     // if password matches
@@ -169,29 +178,39 @@ app.get("/register", (req, res) => {
 
 //Registering New Users
 app.post("/register", (req, res) => {
-  const errorMsg = "User email exists";
+const errorMsg = "User email exists";
   const userId = generateRandomString();
   const newUser = {
     id: userId, //create a new object so we do not have to go....
     email: req.body.email, //....two levels deep of the get go.
     password: req.body.password,
   };
-  //console.log("user obj has now", users); //update users everytime :)
-  if (!emailLooker(req.body.email)) {  //if emailLooker is false that means email does not exist
-    if(req.body.email && req.body.password) {
+  let user ;  
+  userLogin = req.body;
+  for(let id in users){
+    if(users[id].email === userLogin.email){
+      console.log(users[id]);
+       user = users[id];   //id = generateRandomString()
+      break;
+    } 
+  }
+  if (user) {
+    // if email matches
+    if (user.email === userLogin.email) {
+       //this log will appear in the server terminal, NOT on the browser
+      console.log("user already exists")
+      // redirect to homepage
+      // early return to stop the function
+      return res.status(403).send(errorMsg);  
+      
+    }
+  } 
     users[userId] = newUser;
     res.cookie("userid", userId); //set a cookie with name(key), value
-    return res.redirect("/urls"); //redirect
-    } else {
-      //res.send(errorMsg);
-    res.redirect('/register');
-    }
-  } else {    //if emailLooker is true send a message saying useremail exists!
-    res.send(errorMsg);
-  }
+     res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
-  console.log("Request Made!") ;
 });
+
