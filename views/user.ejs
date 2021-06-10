@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <title>Register</title>
+</head>
+
+<%- include('partials/_header.ejs') %> 
+ <body>
+  <main style="margin: 1em;">
+    <h3>User Database</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">User ID</th>
+          <th scope="col">Email</th>
+          <th scope="col">Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let user in users) { %>
+          <tr>
+            <td><%= users[user].id %></td> 
+            <td><%= users[user].email %></td>
+            <td><%= users[user].password %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+
+<%- include('partials/_footer.ejs') %> 
