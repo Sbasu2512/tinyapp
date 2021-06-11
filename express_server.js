@@ -8,6 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
+const cookieSession = require('cookie-session')
 
 const urlDatabase = {
   
@@ -151,7 +152,8 @@ app.post("/login", (req, res) => {
   // accept user information
   const userLogin = req.body;
   let user;
-  if (userLogin.email === "admin" && userLogin.password === "admin") {
+  //admin login
+  if (userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)) {
     user = users['admin'];
     const templateVars = {
       //shortURL: req.params.shortURL,
@@ -176,7 +178,7 @@ app.post("/login", (req, res) => {
   // if user exists & password matches
   if (user && doesPasswordMatch) {
       //this log will appear in the server terminal, NOT on the browser
-      console.log(`${req.params.email} logged in!`);
+      console.log(`someone logged in!`);
       // set cookie with name = "userid" and value = users name (lowercase)
       res.cookie("userid", user.id);
       // redirect to homepage
