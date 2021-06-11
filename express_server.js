@@ -9,7 +9,8 @@ app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 const cookieSession = require('cookie-session');
-const urlsForUser = require('./helper');
+const { urlsForUser } = require('./helper');
+const { generateRandomString } = require('./helper');
 
 app.use(cookieSession({
   name: 'session',
@@ -28,10 +29,7 @@ const users = {
   },
 };
 
-// simulate generating unique shortURL - 6 random alphanumeric characters
-const generateRandomString = function () {
-  return Math.random().toString(36).substring(2, 8);
-};
+
 // homepage (root)
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -139,13 +137,10 @@ app.post("/login", (req, res) => {
   if (userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)) {
     user = users['admin'];
     const templateVars = {
-      //shortURL: req.params.shortURL,
-     // longURL: urlDatabase[req.params.shortURL],
       user: user,
       userid: user.userid,
       users: users
     };
-    // res.cookie("userid", 'admin');
     req.session['userid'] = 'admin' ;
     return res.render("user", templateVars);
   }
