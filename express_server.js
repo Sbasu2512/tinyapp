@@ -17,7 +17,7 @@ const users = {
   admin: {
     id: "admin",
     email: "admin",
-    password: "admin",
+    password: bcrypt.hashSync("admin", saltRounds),
   },
 };
 //a function which returns the URLs where the userID is equal to the id of the currently logged-in user
@@ -172,10 +172,9 @@ app.post("/login", (req, res) => {
       break;
     }
   }
-  // if user exists
-  if (user) {
-    // if password matches
-    if (user.password === userLogin.password) {
+  let doesPasswordMatch = bcrypt.compareSync(userLogin.password, user.password);
+  // if user exists & password matches
+  if (user && doesPasswordMatch) {
       //this log will appear in the server terminal, NOT on the browser
       console.log(`${req.params.email} logged in!`);
       // set cookie with name = "userid" and value = users name (lowercase)
@@ -183,7 +182,7 @@ app.post("/login", (req, res) => {
       // redirect to homepage
       // early return to stop the function
       return res.redirect("/urls");
-    }
+    
   }
   res.status(403).send("credentials do not match");
 });
