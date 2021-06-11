@@ -8,7 +8,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
+
+app.use(cookieSession({
+  name: 'session',
+  keys: [/* secret keys */],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 const urlDatabase = {
   
@@ -225,7 +233,7 @@ app.post("/register", (req, res) => {
   userLogin = req.body;
   for (let id in users) {
     if (users[id].email === userLogin.email) {
-      console.log(users[id]);
+     // console.log(users[id]);
       user = users[id]; //id = generateRandomString()
       break;
     }
