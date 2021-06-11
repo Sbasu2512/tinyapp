@@ -12,10 +12,7 @@ const cookieSession = require('cookie-session');
 
 app.use(cookieSession({
   name: 'session',
-  keys: [/* secret keys */],
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  keys: ['key1','key2']
 }))
 
 const urlDatabase = {
@@ -59,9 +56,9 @@ app.get("/hello", (req, res) => {
 
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
-  const ownedURLs = urlsForUser(req.cookies.userid);
+  const ownedURLs = urlsForUser(req.session.userid);
   //console.log("ownedURLS are: ",ownedURLs);
-  let user = users[req.cookies.userid]; //we take the name not the value from res.cookie()
+  let user = users[req.session.userid]; //we take the name not the value from res.cookie()
   //console.log("value of user is: ", user);
   const templateVars = {
     user: user,
@@ -75,7 +72,7 @@ app.get("/urls", (req, res) => {
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   
-  let user = users[req.cookies.userid];
+  let user = users[req.session.userid];
   const templateVars = {
     user: user,
   };
@@ -89,7 +86,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   //const ownedURLs = urlsForUser(req.cookies['user_id']);
   const shortURL = generateRandomString();
-  const userid = req.cookies.userid;
+  const userid = req.session.userid;
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: userid
@@ -100,15 +97,15 @@ app.post("/urls", (req, res) => {
 
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
-  const ownedURLs = urlsForUser(req.cookies.userid);
+  const ownedURLs = urlsForUser(req.session.userid);
   //console.log("ownedURLS are: ",ownedURLs);
-  let user = users[req.cookies.userid];
+  let user = users[req.session.userid];
   //console.log("value of user here is: ", user);
  //console.log(req.params.shortURL);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
-    userid: req.cookies.userid,
+    userid: req.session.userid,
     user: user,
   };
   res.render("urls_show", templateVars);
@@ -116,12 +113,12 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
-  const ownedURLs = urlsForUser(req.cookies.userid)
-  let user = users[req.cookies.userid]; //user id 
+  const ownedURLs = urlsForUser(req.session.userid)
+  let user = users[req.session.userid]; //user id 
   if(user.id === ownedURLs[req.params.shortURL].userID){
   urlDatabase[req.params.shortURL] = {
     longURL: req.body.longURL,
-    userID: req.cookies.userid
+    userID: req.session.userid
   };
 } 
   res.redirect(`/urls/${req.params.shortURL}`);
@@ -136,11 +133,9 @@ app.get("/u/:shortURL", (req, res) => {
 
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const ownedURLs = urlsForUser(req.cookies.userid)
-  //console.log("ownedURLs are: ",ownedURLs);
-  let user = users[req.cookies.userid]; //user id 
-  //console.log("value of user is: ",user);
-  if(user.id === ownedURLs.userID){
+  const ownedURLs = urlsForUser(req.session.userid)
+  let user = users[req.session.userid]; //user id 
+  if(user.id === ownedURLs[req.params.shortURL].userID){
   delete urlDatabase[req.params.shortURL];
 }
   res.redirect("/urls");
@@ -170,25 +165,28 @@ app.post("/login", (req, res) => {
       userid: user.userid,
       users: users
     };
-    res.cookie("userid", 'admin');
+    // res.cookie("userid", 'admin');
+    req.session['userid'] = 'admin' ;
     return res.render("user", templateVars);
   }
   // check if username exists
   for (let id in users) {
     if (users[id].email === userLogin.email) {
-      console.log(users[id]);
+      console.log('users object has: inside if statemtn 177',users[id]);
       user = users[id]; //id = random string
       
       break;
     }
   }
-  let doesPasswordMatch = bcrypt.compareSync(userLogin.password, user.password);
+ // console.log('expecting users[id].user to appear here: 183 ',user);
+  //console.log('expecting users[id].password to appear here: 184 ',user.password);
+  //let doesPasswordMatch = bcrypt.compareSync(userLogin.password, user.password);
   // if user exists & password matches
-  if (user && doesPasswordMatch) {
+  if (user && bcrypt.compareSync(userLogin.password, user.password)) {
       //this log will appear in the server terminal, NOT on the browser
       console.log(`someone logged in!`);
       // set cookie with name = "userid" and value = users name (lowercase)
-      res.cookie("userid", user.id);
+      req.session["userid"] = user.id;
       // redirect to homepage
       // early return to stop the function
       return res.redirect("/urls");
@@ -199,7 +197,8 @@ app.post("/login", (req, res) => {
 
 // allows users to logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("userid");
+  //res.clearCookie("userid");
+  req.session['userid'] = null ;
   //console.log("cookie cleared");
   res.redirect("/login");
   //console.log("logged out");
@@ -208,12 +207,12 @@ app.post("/logout", (req, res) => {
 //which returns the template regitration.ejs
 app.get("/register", (req, res) => {
   //we are getting the userid cookie. name should be same all over
-  let user = users[req.cookies.userid];
+  let user = users[req.session.userid];
   //console.log("req.cookies.userid line 159 :", req.cookies.userid);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    userid: req.cookies.userid,
+    userid: req.session.userid,
     user: user, //user = users[req.cookies.userid]
   };
   //resgitration == view, templateVars == local object for this specific view
@@ -250,7 +249,8 @@ app.post("/register", (req, res) => {
   }
   users[userId] = newUser;
   // console.log(userId);
-  res.cookie("userid", userId); //set a cookie with name(key), value
+  //res.cookie("userid", userId); //set a cookie with name(key), value
+  req.session['userid'] = userId
   res.redirect("/urls");
 });
 
