@@ -9,6 +9,7 @@ app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 const cookieSession = require('cookie-session');
+const urlsForUser = require('./helper');
 
 app.use(cookieSession({
   name: 'session',
@@ -25,16 +26,6 @@ const users = {
     email: "admin",
     password: bcrypt.hashSync("admin", saltRounds),
   },
-};
-//a function which returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = function(id) {
-  const userURLs = {};
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      userURLs[url] = urlDatabase[url];
-    }
-  }
-  return userURLs;
 };
 
 // simulate generating unique shortURL - 6 random alphanumeric characters
@@ -56,22 +47,17 @@ app.get("/hello", (req, res) => {
 
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid);
-  //console.log("ownedURLS are: ",ownedURLs);
+  const ownedURLs = urlsForUser(req.session.userid,urlDatabase);
   let user = users[req.session.userid]; //we take the name not the value from res.cookie()
-  //console.log("value of user is: ", user);
   const templateVars = {
     user: user,
     urls: ownedURLs
   };
   return res.render("urls_index", templateVars);
-
-//res.send('URLs do not belong to the current user');
 });
 
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
-  
   let user = users[req.session.userid];
   const templateVars = {
     user: user,
@@ -84,24 +70,18 @@ app.get("/urls/new", (req, res) => {
 
 // creates the shortURL and redirects to show user their newly created link
 app.post("/urls", (req, res) => {
-  //const ownedURLs = urlsForUser(req.cookies['user_id']);
   const shortURL = generateRandomString();
   const userid = req.session.userid;
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: userid
   };
-  //console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid);
-  //console.log("ownedURLS are: ",ownedURLs);
   let user = users[req.session.userid];
-  //console.log("value of user here is: ", user);
- //console.log(req.params.shortURL);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
@@ -113,7 +93,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid)
+  const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid]; //user id 
   if(user.id === ownedURLs[req.params.shortURL].userID){
   urlDatabase[req.params.shortURL] = {
@@ -133,7 +113,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid)
+  const ownedURLs = urlsForUser(req.session.userid, urlDatabase)
   let user = users[req.session.userid]; //user id 
   if(user.id === ownedURLs[req.params.shortURL].userID){
   delete urlDatabase[req.params.shortURL];
