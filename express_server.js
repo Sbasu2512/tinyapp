@@ -48,10 +48,10 @@ app.get("/hello", (req, res) => {
 
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
-  //console.log(req.cookies);
   const ownedURLs = urlsForUser(req.cookies.userid);
- // console.log(ownedURLs);
+  //console.log("ownedURLS are: ",ownedURLs);
   let user = users[req.cookies.userid]; //we take the name not the value from res.cookie()
+  //console.log("value of user is: ", user);
   const templateVars = {
     user: user,
     urls: ownedURLs
@@ -89,9 +89,11 @@ app.post("/urls", (req, res) => {
 
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
+  const ownedURLs = urlsForUser(req.cookies.userid);
+  //console.log("ownedURLS are: ",ownedURLs);
   let user = users[req.cookies.userid];
- console.log(urlDatabase);
- console.log(req.params);
+  //console.log("value of user here is: ", user);
+ //console.log(req.params.shortURL);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
@@ -103,11 +105,16 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
+  const ownedURLs = urlsForUser(req.cookies.userid)
+  let user = users[req.cookies.userid]; //user id 
+  if(user.id === ownedURLs[req.params.shortURL].userID){
   urlDatabase[req.params.shortURL] = {
     longURL: req.body.longURL,
     userID: req.cookies.userid
   };
+} 
   res.redirect(`/urls/${req.params.shortURL}`);
+
 });
 
 // uses shortURL to redirect to longURL
@@ -118,7 +125,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
+  const ownedURLs = urlsForUser(req.cookies.userid)
+  //console.log("ownedURLs are: ",ownedURLs);
+  let user = users[req.cookies.userid]; //user id 
+  //console.log("value of user is: ",user);
+  if(user.id === ownedURLs.userID){
   delete urlDatabase[req.params.shortURL];
+}
   res.redirect("/urls");
 });
 
@@ -164,7 +177,7 @@ app.post("/login", (req, res) => {
       //this log will appear in the server terminal, NOT on the browser
       console.log(`${req.params.email} logged in!`);
       // set cookie with name = "userid" and value = users name (lowercase)
-      res.cookie("userid", userLogin.userid);
+      res.cookie("userid", user.id);
       // redirect to homepage
       // early return to stop the function
       return res.redirect("/urls");
