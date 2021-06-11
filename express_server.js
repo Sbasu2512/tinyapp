@@ -6,6 +6,10 @@ const cookieParser = require("cookie-parser");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const bcrypt = require('bcrypt');
+const password = "purple-monkey-dinosaur"; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
+
 
 const urlDatabase = {
   
@@ -216,7 +220,7 @@ app.post("/register", (req, res) => {
   const newUser = {
     id: userId, //create a new object so we do not have to go....
     email: req.body.email, //....two levels deep of the get go.
-    password: req.body.password,
+    password: bcrypt.hashSync(req.body.password, saltRounds),
   };
   let user;
   userLogin = req.body;
