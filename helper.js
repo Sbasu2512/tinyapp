@@ -9,4 +9,9 @@ const urlsForUser = function(id, database) {
   return userURLs;
 };
 
-module.exports = urlsForUser;
+// simulate generating unique shortURL - 6 random alphanumeric characters
+const generateRandomString = function () {
+  return Math.random().toString(36).substring(2, 8);
+};
+
+module.exports = { urlsForUser , generateRandomString };
