@@ -3,23 +3,19 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 const cookieSession = require('cookie-session');
-const { urlsForUser } = require('./helper');
-const { generateRandomString } = require('./helper');
-
+const { urlsForUser, generateRandomString } = require('./helper');
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['key1','key2']
 }))
-
-const urlDatabase = {
-  
-};
+//URL database
+const urlDatabase = {};
 //Create a global object called users which will be used to store and access the users in the app.
 const users = {
   admin: {
@@ -28,8 +24,6 @@ const users = {
     password: bcrypt.hashSync("admin", saltRounds),
   },
 };
-
-
 // homepage (root)
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -42,7 +36,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid,urlDatabase);
@@ -53,7 +46,6 @@ app.get("/urls", (req, res) => {
   };
   return res.render("urls_index", templateVars);
 });
-
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   let user = users[req.session.userid];
@@ -65,7 +57,6 @@ app.get("/urls/new", (req, res) => {
   }
   res.redirect("/login");
 });
-
 // creates the shortURL and redirects to show user their newly created link
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -76,7 +67,6 @@ app.post("/urls", (req, res) => {
   };
   res.redirect(`/urls/${shortURL}`);
 });
-
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.session.userid];
@@ -88,7 +78,6 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
-
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
@@ -102,13 +91,11 @@ app.post("/urls/:shortURL/update", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 
 });
-
 // uses shortURL to redirect to longURL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
-
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase)
@@ -118,12 +105,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 }
   res.redirect("/urls");
 });
-
 //get the login page to let user login
 app.get("/login", (req, res) => {
   res.render("login", {});
 });
-
 app.get("/user", (req, res)=>{
   res.render("user",{users});
 })
@@ -153,10 +138,6 @@ app.post("/login", (req, res) => {
       break;
     }
   }
- // console.log('expecting users[id].user to appear here: 183 ',user);
-  //console.log('expecting users[id].password to appear here: 184 ',user.password);
-  //let doesPasswordMatch = bcrypt.compareSync(userLogin.password, user.password);
-  // if user exists & password matches
   if (user && bcrypt.compareSync(userLogin.password, user.password)) {
       //this log will appear in the server terminal, NOT on the browser
       console.log(`someone logged in!`);
@@ -169,56 +150,42 @@ app.post("/login", (req, res) => {
   }
   res.status(403).send("credentials do not match");
 });
-
 // allows users to logout
 app.post("/logout", (req, res) => {
-  //res.clearCookie("userid");
   req.session['userid'] = null ;
-  //console.log("cookie cleared");
   res.redirect("/login");
-  //console.log("logged out");
 });
-
 //which returns the template regitration.ejs
 app.get("/register", (req, res) => {
-  //we are getting the userid cookie. name should be same all over
   let user = users[req.session.userid];
-  //console.log("req.cookies.userid line 159 :", req.cookies.userid);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
     userid: req.session.userid,
     user: user, //user = users[req.cookies.userid]
   };
-  //resgitration == view, templateVars == local object for this specific view
   res.render("registration", templateVars); //res.render(view [, locals] [, callback])
 });
-
 //Registering New Users
 app.post("/register", (req, res) => {
   const errorMsg = "User email exists, please login";
   const userId = generateRandomString();
   const newUser = {
-    id: userId, //create a new object so we do not have to go....
-    email: req.body.email, //....two levels deep of the get go.
+    id: userId, 
+    email: req.body.email, 
     password: bcrypt.hashSync(req.body.password, saltRounds),
   };
   let user;
   userLogin = req.body;
   for (let id in users) {
     if (users[id].email === userLogin.email) {
-     // console.log(users[id]);
-      user = users[id]; //id = generateRandomString()
+      user = users[id]; 
       break;
     }
   }
   if (user) {
-    // if email matches
     if (user.email === userLogin.email) {
-      //this log will appear in the server terminal, NOT on the browser
-      //console.log("user already exists");
-      // redirect to homepage
-      // early return to stop the function
+      // redirect to homepage & early return to stop the function
       return res.status(403).send(errorMsg);
     }
   }
@@ -228,7 +195,6 @@ app.post("/register", (req, res) => {
   req.session['userid'] = userId
   res.redirect("/urls");
 });
-
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
