@@ -25,6 +25,11 @@ const users = {
   },
 };
 // homepage (root)
+/*GET /
+if user is logged in:
+(Minor) redirect to /urls
+if user is not logged in:
+(Minor) redirect to /login*/
 app.get("/", (req, res) => {
   let user = users[req.session.userid];
   const templateVars = {
