@@ -74,38 +74,32 @@ app.post("/urls", (req, res) => {
   const userid = req.session.userid;
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    userID: userid
+    userID: userid,
   };
-  if(user !== 'undefined' && user){
+  if (user !== "undefined" && user) {
     return res.redirect(`/urls/${shortURL}`);
   }
   res.send("Please login/register");
-  
 });
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  let shortURL;
-  let longURL;
+  let shortURL = req.params.shortURL;
   let user = users[req.session.userid];
-  const templateVars = {
-    shortURL,
-    longURL, 
-    userid: req.session.userid,
-    user
-  };
-console.log('OwnedURL is :',ownedURLs);
-console.log('user logged in is: ', req.session.userid);
-  // if(user !== 'undefined' && user){    
-  //   if (!ownedURLs[shortURL]) {
-  //     res.render('urls_show', templateVars);
-  //   } else {
-  //     templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
-  //     templateVars.shortURL = req.params.shortURL;
-  //     res.render('urls_show', templateVars);
-  //   }
-  // }
-  // res.send("Please Login/Register")
+  if (!user) {
+    return res.send("Please Login/Register");
+  }
+  if (!ownedURLs[shortURL]) {
+    return res.send("URL does not exsist");
+    };
+    let longURL = ownedURLs[req.params.shortURL].longURL;
+    const templateVars = {
+      shortURL,
+      longURL,
+      userid: req.session.userid,
+      user,
+    }
+    return res.render("urls_show", templateVars);
 });
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
@@ -156,3 +150,25 @@ app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
 
+
+
+/***
+
+console.log('OwnedURL is :',ownedURLs); // shows the ownedURL object
+console.log('user logged in is: ', req.session.userid);//returns current user that is logged in
+console.log('shortURL', req.params.shortURL) //returns shortURL keys assigned to it  
+
+if(req.params.shortURL === ownedURLs[req.params.shortURL]){
+  console.log("Inside the first if statement i.e., shortURL found")
+  if(user && req.session.userid === ownedURLs[req.params.shortURL].userID){
+    console.log("Inside the second if statement")
+    templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
+      templateVars.shortURL = req.params.shortURL;
+      res.render('urls_show', templateVars);
+  } else {
+    res.render('urls_show', templateVars);
+  }
+  res.send("URL does not belong to user");
+} 
+
+*/
