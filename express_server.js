@@ -105,12 +105,20 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/update", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid]; //user id undefined
-  if(user.id === ownedURLs[req.params.shortURL].userID){  /*  */
-  urlDatabase[req.params.shortURL] = {
-    longURL: req.body.longURL,
-    userID: req.session.userid
-  };
-} 
+  shortURL = req.params.shortURL;
+  if (!user) {
+    return res.send("Please Login/Register");
+  }
+  if (!ownedURLs[shortURL]) {
+    return res.send("URL does not exsist");
+    };
+    let longURL = ownedURLs[req.params.shortURL].longURL;
+    console.log("longURl", longURL);
+    console.log("longURL in urlDatabase", urlDatabase[req.params.shortURL].longURL);
+    urlDatabase[req.params.shortURL] = {
+      longURL,
+      userID: req.session.userid
+    };
   res.redirect(`/urls/${req.params.shortURL}`);
 
 });
@@ -118,12 +126,8 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
-  if (user) {
-    if (user.id !== ownedURLs[req.params.shortURL].userID) {
-      const longURL = urlDatabase[req.params.shortURL].longURL;
-      return res.send("URL do not belong to you!");
-    }
-    return res.redirect(longURL);
+  if (!user) {
+   return res.redirect('./login');
   }
   return res.send("Please login/register");
 });
