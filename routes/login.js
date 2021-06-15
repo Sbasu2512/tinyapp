@@ -29,7 +29,7 @@ const loginRoutes = (users) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, saltRounds),
     };
-    let user = emailLooker(userLogin.email);
+    let user = emailLooker(userLogin.email, users);
 
     if (user) {
       if (user.email === userLogin.email) {
@@ -69,7 +69,7 @@ const loginRoutes = (users) => {
       return res.render("user", templateVars);
     }
     //check if user exists
-    user = emailLooker(userLogin.email);
+    user = emailLooker(userLogin.email, users);
     // if user exists & password matches
     if (user && bcrypt.compareSync(userLogin.password, user.password)) {
       //this log will appear in the server terminal, NOT on the browser
