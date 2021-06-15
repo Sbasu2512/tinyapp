@@ -1,5 +1,6 @@
 const express = require("express");
-const loginRoutes = require("./routes/login")
+const loginRoutes = require("./routes/login");
+const homeRoutes = require("./routes/home");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
@@ -7,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 const cookieSession = require('cookie-session');
-const { urlsForUser, generateRandomString } = require('./helper');
+const { urlsForUser, generateRandomString, emailLooker } = require('./helper');
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -15,7 +16,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key1','key2']
 }))
-//user Database
+//Create a global object called users which will be used to store and access the users in the app.
 const users = {
   admin: {
     id: "admin",
@@ -25,37 +26,10 @@ const users = {
 };
 //URL database
 const urlDatabase = {};
-//Create a global object called users which will be used to store and access the users in the app.
+//activating my login routes
 app.use('/',loginRoutes(users));
 // homepage (root)
-app.get("/", (req, res) => {
-  let user = users[req.session.userid];
-  const templateVars = {
-    user: user,
-  };
-  if(user !== 'undefined' && user){
-   return res.render("urls_new", templateVars);
-  }
-  res.redirect("/login");
-});
-// urlDatabase
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-// shows the shortURL longURL pairs
-app.get("/urls", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid,urlDatabase);
-  let user = users[req.session.userid]; //we take the name not the value from res.cookie()
-  const templateVars = {
-    user: user,
-    urls: ownedURLs
-  };
-  if(user !== 'undefined' && user){
-    return res.render("urls_index", templateVars);
-  }
-  res.send("Please Log in or Create a account");
-});
+app.use('/', homeRoutes(users, urlDatabase));
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   let user = users[req.session.userid];
@@ -66,20 +40,6 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new", templateVars);
   }
   res.redirect("/login");
-});
-// creates the shortURL and redirects to show user their newly created link
-app.post("/urls", (req, res) => {
-  let user = users[req.session.userid];
-  const shortURL = generateRandomString();
-  const userid = req.session.userid;
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL,
-    userID: userid,
-  };
-  if (user !== "undefined" && user) {
-    return res.redirect(`/urls/${shortURL}`);
-  }
-  res.send("Please login/register");
 });
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
@@ -130,11 +90,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const ownedURLs = urlsForUser(req.session.userid, urlDatabase)
-  let user = users[req.session.userid]; //user id 
-  if(user.id === ownedURLs[req.params.shortURL].userID){
-  delete urlDatabase[req.params.shortURL];
-}
+  const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
+  let user = users[req.session.userid]; //user id
+  let shortURL = req.params.shortURL;
+  if (!user) {
+    return res.send("Please Login/Register");
+  }
+  if (!ownedURLs[shortURL]) {
+    return res.send("URL does not exsist");
+  }
+  if (user.id === ownedURLs[shortURL].userID) {
+    delete urlDatabase[shortURL];
+  }
   res.redirect("/urls");
 });
 
