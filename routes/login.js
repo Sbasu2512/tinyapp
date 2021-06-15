@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router() ;
 const cookieParser = require("cookie-parser");
 const cookieSession = require('cookie-session');
-const { urlsForUser, generateRandomString } = require('../helper');
+const { urlsForUser, generateRandomString, emailLooker } = require('../helper');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 
@@ -11,13 +11,7 @@ const loginRoutes = (users) => {
 /********* Regitering The User *******/
 /************************************/
 //which returns the template regitration.ejs
-const emailLookup = (email) =>{
-  for (let id in users) {
-    if (users[id].email === email) {
-       return users[id]; 
-    }
-  }
-}
+
 
 router.get("/register", (req, res) => {
   let user = users[req.session.userid];
@@ -37,11 +31,11 @@ router.post("/register", (req, res) => {
     email: req.body.email, 
     password: bcrypt.hashSync(req.body.password, saltRounds),
   };
-  let user = emailLookup(userLogin.email);
+  let user = emailLooker(userLogin.email);
 
   if (user) {
     if (user.email === userLogin.email) {
-      // redirect to homepage & early return to stop the function
+      // send error msg & early return to stop the function
       return res.status(403).send(errorMsg);
     }
   }
@@ -63,35 +57,30 @@ router.post("/login", (req, res) => {
   const userLogin = req.body;
   let user;
   //admin login
-  if (userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)) {
-    user = users['admin'];
+  if (
+    userLogin.email === "admin" &&
+    bcrypt.compareSync("admin", userLogin.password)
+  ) {
+    user = users["admin"];
     const templateVars = {
-      user: user,
+      user,
       userid: user.userid,
-      users: users
+      users,
     };
-    req.session['userid'] = 'admin' ;
+    req.session["userid"] = "admin";
     return res.render("user", templateVars);
   }
-  // check if username exists
-  for (let id in users) {
-    if (users[id].email === userLogin.email) {
-      // console.log('users object has: inside if statemtn 177',users[id]);
-      user = users[id]; //id = random string
-      
-      break;
-    }
-  }
+  //check if user exists
+  user = emailLooker(userLogin.email);
   // if user exists & password matches
   if (user && bcrypt.compareSync(userLogin.password, user.password)) {
-      //this log will appear in the server terminal, NOT on the browser
-      console.log(`someone logged in!`);
-      // set cookie with name = "userid" and value = users name (lowercase)
-      req.session["userid"] = user.id;
-      // redirect to homepage
-      // early return to stop the function
-      return res.redirect("/urls");
-    
+    //this log will appear in the server terminal, NOT on the browser
+    console.log(`someone logged in!`);
+    // set cookie with name = "userid" and value = users name (lowercase)
+    req.session["userid"] = user.id;
+    // redirect to homepage
+    // early return to stop the function
+    return res.redirect("/urls");
   }
   res.status(403).send("credentials do not match");
 });
