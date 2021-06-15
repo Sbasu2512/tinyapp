@@ -91,10 +91,10 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   if(user !== 'undefined' && user){    
     //userID refers to user.id of our user
-    if(user.id === ownedURLs[req.params.shortURL].userID){
-    return res.render("urls_show", templateVars);
+    if(user.id !== ownedURLs[req.params.shortURL].userID){
+    return res.send("This URL does not belong to ", user.id);
   }
-  return res.send("This URL does not belong to ", user.id);
+  return res.render("urls_show", templateVars);
   }
   res.send("Please Login/Register")
 });
@@ -116,11 +116,11 @@ app.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
   if (user) {
-    if (user.id === ownedURLs[req.params.shortURL].userID) {
+    if (user.id !== ownedURLs[req.params.shortURL].userID) {
       const longURL = urlDatabase[req.params.shortURL].longURL;
-      return res.redirect(longURL);
+      return res.send("URL do not belong to you!");
     }
-    return res.send("URL do not belong to you!");
+    return res.redirect(longURL);
   }
   return res.send("Please login/register");
 });
