@@ -1,7 +1,7 @@
 const express = require("express");
 const authenticate = require("./routes/login")
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const bcrypt = require('bcrypt');
@@ -190,3 +190,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}!`);
+});
