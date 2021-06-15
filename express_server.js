@@ -61,7 +61,7 @@ app.get("/urls", (req, res) => {
   if(user !== 'undefined' && user){
     return res.render("urls_index", templateVars);
   }
-  res.redirect("/login");
+  res.send("Please Log in or Create a account");
 });
 
 // for creating new shortURLs
@@ -84,7 +84,11 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     userID: userid
   };
-  res.redirect(`/urls/${shortURL}`);
+  if(user !== 'undefined' && user){
+    return res.redirect(`/urls/${shortURL}`);
+  }
+  res.send("Please login/register");
+  
 });
 
 // shows user their shortURL
@@ -92,18 +96,21 @@ app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.session.userid];
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
+    longURL: urlDatabase[req.params.shortURL].longURL, /* removed longurl */
     userid: req.session.userid,
     user: user,
   };
-  res.render("urls_show", templateVars);
+  if(user !== 'undefined' && user){
+    return res.render("urls_show", templateVars);
+  }
+  res.send("Please Login/Register")
 });
 
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  let user = users[req.session.userid]; //user id 
-  if(user.id === ownedURLs[req.params.shortURL].userID){
+  let user = users[req.session.userid]; //user id undefined
+  if(user.id === ownedURLs[req.params.shortURL].userID){  /*  */
   urlDatabase[req.params.shortURL] = {
     longURL: req.body.longURL,
     userID: req.session.userid
@@ -115,8 +122,12 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // uses shortURL to redirect to longURL
 app.get("/u/:shortURL", (req, res) => {
+  const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if(user.id === ownedURLs[req.params.shortURL].userID){  /*  */
+    return res.redirect(longURL);
+  } 
+  return res.send("URL do not belong to you!")
 });
 
 // remove shortURL then redirect back to /urls
