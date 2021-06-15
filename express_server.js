@@ -85,13 +85,10 @@ app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.session.userid];
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL, /* removed longurl */
+    longURL: urlDatabase[req.params.shortURL].longURL, 
     userid: req.session.userid,
     user: user,
   };
-  
-  console.log("ownedURLs[req.params.shortURL]",ownedURLs[req.params.shortURL]);
-  
   if(user !== 'undefined' && user){    
     //userID refers to user.id of our user
     if(user.id === ownedURLs[req.params.shortURL].userID){
@@ -166,7 +163,7 @@ app.post("/login", (req, res) => {
   // check if username exists
   for (let id in users) {
     if (users[id].email === userLogin.email) {
-      console.log('users object has: inside if statemtn 177',users[id]);
+      // console.log('users object has: inside if statemtn 177',users[id]);
       user = users[id]; //id = random string
       
       break;
