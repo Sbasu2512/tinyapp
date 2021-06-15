@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router ;
+const generateRandomString = require('../helper');
 /**************************************/
 /********* Regitering The User *******/
 /************************************/
