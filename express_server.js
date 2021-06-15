@@ -85,17 +85,24 @@ app.post("/urls", (req, res) => {
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  //console.log(ownedURLs);
   let user = users[req.session.userid];
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL, 
+    shortURL,
+    longURL, 
     userid: req.session.userid,
-    user: user,
+    user
   };
+
+  
+
   if(user !== 'undefined' && user){    
-    //checking if the short URL is in the ownedURLs of that given user
-      return res.render("urls_show", templateVars);
+    if (!ownedURLs[shortURL]) {
+      res.render('urls_show', templateVars);
+    } else {
+      templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
+      templateVars.shortURL = req.params.shortURL;
+      res.render('urls_show', templateVars);
+    }
   }
   res.send("Please Login/Register")
 });
