@@ -25,11 +25,6 @@ const users = {
   },
 };
 // homepage (root)
-/*GET /
-if user is logged in:
-(Minor) redirect to /urls
-if user is not logged in:
-(Minor) redirect to /login*/
 app.get("/", (req, res) => {
   let user = users[req.session.userid];
   const templateVars = {
@@ -44,6 +39,7 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid,urlDatabase);
@@ -85,6 +81,7 @@ app.post("/urls", (req, res) => {
 });
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
+  const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -92,8 +89,15 @@ app.get("/urls/:shortURL", (req, res) => {
     userid: req.session.userid,
     user: user,
   };
-  if(user !== 'undefined' && user){
+  
+  console.log("ownedURLs[req.params.shortURL]",ownedURLs[req.params.shortURL]);
+  
+  if(user !== 'undefined' && user){    
+    //userID refers to user.id of our user
+    if(user.id === ownedURLs[req.params.shortURL].userID){
     return res.render("urls_show", templateVars);
+  }
+  return res.send("This URL does not belong to ", user.id);
   }
   res.send("Please Login/Register")
 });
