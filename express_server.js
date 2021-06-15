@@ -92,7 +92,7 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL,
     longURL, 
     userid: req.session.userid,
-    user
+    user: users[req.session.userid]
   };
 
   if(user !== 'undefined' && user){    
