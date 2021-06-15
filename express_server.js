@@ -1,5 +1,5 @@
 const express = require("express");
-const authenticate = require("./routes/login")
+const loginRoutes = require("./routes/login")
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
@@ -9,17 +9,24 @@ const saltRounds = 10;
 const cookieSession = require('cookie-session');
 const { urlsForUser, generateRandomString } = require('./helper');
 app.set("view engine", "ejs");
-app.use('/',authenticate);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use(cookieSession({
-//   name: 'session',
-//   keys: ['key1','key2']
-// }))
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1','key2']
+}))
+//user Database
+const users = {
+  admin: {
+    id: "admin",
+    email: "admin",
+    password: bcrypt.hashSync("admin", saltRounds),
+  },
+};
 //URL database
 const urlDatabase = {};
 //Create a global object called users which will be used to store and access the users in the app.
-
+app.use('/',loginRoutes(users));
 // homepage (root)
 app.get("/", (req, res) => {
   let user = users[req.session.userid];
@@ -78,6 +85,7 @@ app.post("/urls", (req, res) => {
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
+  //console.log(ownedURLs);
   let user = users[req.session.userid];
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -87,7 +95,7 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   if(user !== 'undefined' && user){    
     //userID refers to user.id of our user
-    if(user.id !== ownedURLs[req.params.shortURL].userID){
+    if(req.params.shortURL !== ownedURLs[req.params.shortURL]){
     return res.send("This URL does not belong to ", user.id);
   }
   return res.render("urls_show", templateVars);
@@ -137,6 +145,9 @@ app.get("/user", (req, res)=>{
 return res.redirect("/login")
 })
 
+
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
+
