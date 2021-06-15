@@ -32,7 +32,14 @@ const users = {
 
 // homepage (root)
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  let user = users[req.session.userid];
+  const templateVars = {
+    user: user,
+  };
+  if(user !== 'undefined' && user){
+   return res.render("urls_new", templateVars);
+  }
+  res.redirect("/login");
 });
 // urlDatabase
 app.get("/urls.json", (req, res) => {
@@ -51,7 +58,10 @@ app.get("/urls", (req, res) => {
     user: user,
     urls: ownedURLs
   };
-  return res.render("urls_index", templateVars);
+  if(user !== 'undefined' && user){
+    return res.render("urls_index", templateVars);
+  }
+  res.redirect("/login");
 });
 
 // for creating new shortURLs
