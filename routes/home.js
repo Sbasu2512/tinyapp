@@ -51,3 +51,4 @@ const homeRoutes = (users) => {
   });
   return router;
 };
+module.exports = homeRoutes ;
