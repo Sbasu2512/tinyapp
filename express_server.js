@@ -94,7 +94,7 @@ app.get("/urls/:shortURL", (req, res) => {
     user: user,
   };
   if(user !== 'undefined' && user){    
-    //userID refers to user.id of our user
+    //checking if the short URL is in the ownedURLs of that given user
     if(req.params.shortURL !== ownedURLs[req.params.shortURL]){
     return res.send("This URL does not belong to ", user.id);
   }
