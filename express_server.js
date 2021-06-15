@@ -92,19 +92,20 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL,
     longURL, 
     userid: req.session.userid,
-    user: users[req.session.userid]
+    user
   };
-
-  if(user !== 'undefined' && user){    
-    if (!ownedURLs[shortURL]) {
-      res.render('urls_show', templateVars);
-    } else {
-      templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
-      templateVars.shortURL = req.params.shortURL;
-      res.render('urls_show', templateVars);
-    }
-  }
-  res.send("Please Login/Register")
+console.log('OwnedURL is :',ownedURLs);
+console.log('user logged in is: ', req.session.userid);
+  // if(user !== 'undefined' && user){    
+  //   if (!ownedURLs[shortURL]) {
+  //     res.render('urls_show', templateVars);
+  //   } else {
+  //     templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
+  //     templateVars.shortURL = req.params.shortURL;
+  //     res.render('urls_show', templateVars);
+  //   }
+  // }
+  // res.send("Please Login/Register")
 });
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
