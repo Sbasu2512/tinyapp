@@ -8,7 +8,7 @@ const saltRounds = 10;
 
 const homeRoutes = (users) => {
   //home page
-  app.get("/", (req, res) => {
+  router.get("/", (req, res) => {
     let user = users[req.session.userid];
     const templateVars = {
       user: user,
@@ -19,11 +19,11 @@ const homeRoutes = (users) => {
     res.redirect("/login");
   });
   // urlDatabase
-  app.get("/urls.json", (req, res) => {
+  router.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
   });
   // shows the shortURL longURL pairs
-  app.get("/urls", (req, res) => {
+  router.get("/urls", (req, res) => {
     const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
     let user = users[req.session.userid]; //we take the name not the value from res.cookie()
     const templateVars = {
