@@ -1,15 +1,31 @@
 const express = require("express");
-const router = express.Router ;
-const generateRandomString = require('../helper');
+const router = express.Router() ;
+const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
+const { urlsForUser, generateRandomString } = require('../helper');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;  
+
+const users = {
+  admin: {
+    id: "admin",
+    email: "admin",
+    password: bcrypt.hashSync("admin", saltRounds),
+  },
+};
+
+router.use(cookieSession({
+  name: 'session',
+  keys: ['key1','key2']
+}))
 /**************************************/
 /********* Regitering The User *******/
 /************************************/
 //which returns the template regitration.ejs
 router.get("/register", (req, res) => {
+  console.log(req.session);
   let user = users[req.session.userid];
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
     userid: req.session.userid,
     user: user, 
   };
@@ -18,6 +34,7 @@ router.get("/register", (req, res) => {
 //Registering New Users
 router.post("/register", (req, res) => {
   const errorMsg = "User email exists, please login";
+  console.log(req.body);
   const userId = generateRandomString();
   const newUser = {
     id: userId, 
@@ -42,8 +59,57 @@ router.post("/register", (req, res) => {
   req.session['userid'] = userId
   res.redirect("/urls");
 });
-router.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
+/*********************************/
+/***********Login****************/
+/*******************************/
+//get the login page to let user login
+router.get("/login", (req, res) => {
+  res.render("login", {});
 });
+// allows user to login with a username - redirects to /urls
+router.post("/login", (req, res) => {
+  //check if login credentials belong to admin
+  // accept user information
+  const userLogin = req.body;
+  let user;
+  //admin login
+  if (userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)) {
+    user = users['admin'];
+    const templateVars = {
+      user: user,
+      userid: user.userid,
+      users: users
+    };
+    req.session['userid'] = 'admin' ;
+    return res.render("user", templateVars);
+  }
+  // check if username exists
+  for (let id in users) {
+    if (users[id].email === userLogin.email) {
+      // console.log('users object has: inside if statemtn 177',users[id]);
+      user = users[id]; //id = random string
+      
+      break;
+    }
+  }
+  // if user exists & password matches
+  if (user && bcrypt.compareSync(userLogin.password, user.password)) {
+      //this log will appear in the server terminal, NOT on the browser
+      console.log(`someone logged in!`);
+      // set cookie with name = "userid" and value = users name (lowercase)
+      req.session["userid"] = user.id;
+      // redirect to homepage
+      // early return to stop the function
+      return res.redirect("/urls");
+    
+  }
+  res.status(403).send("credentials do not match");
+});
+// allows users to logout
+router.post("/logout", (req, res) => {
+  req.session['userid'] = null ;
+  res.redirect("/login");
+});
+
 
 module.exports = router; 
