@@ -11,6 +11,14 @@ const loginRoutes = (users) => {
 /********* Regitering The User *******/
 /************************************/
 //which returns the template regitration.ejs
+const emailLookup = (email) =>{
+  for (let id in users) {
+    if (users[id].email === email) {
+       return users[id]; 
+    }
+  }
+}
+
 router.get("/register", (req, res) => {
   let user = users[req.session.userid];
   const templateVars = {
@@ -23,19 +31,14 @@ router.get("/register", (req, res) => {
 router.post("/register", (req, res) => {
   const errorMsg = "User email exists, please login";
   const userId = generateRandomString();
+  userLogin = req.body;
   const newUser = {
     id: userId, 
     email: req.body.email, 
     password: bcrypt.hashSync(req.body.password, saltRounds),
   };
-  let user;
-  userLogin = req.body;
-  for (let id in users) {
-    if (users[id].email === userLogin.email) {
-      user = users[id]; 
-      break;
-    }
-  }
+  let user = emailLookup(userLogin.email);
+
   if (user) {
     if (user.email === userLogin.email) {
       // redirect to homepage & early return to stop the function
