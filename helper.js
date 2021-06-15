@@ -9,9 +9,17 @@ const urlsForUser = function(id, database) {
   return userURLs;
 };
 
+//Looks up if an email exists or not
+const emailLooker = (email) =>{
+  for (let id in users) {
+    if (users[id].email === email) {
+       return users[id]; 
+    }
+  }
+}
 // simulate generating unique shortURL - 6 random alphanumeric characters
 const generateRandomString = function () {
   return Math.random().toString(36).substring(2, 8);
 };
 
-module.exports = { urlsForUser , generateRandomString };
+module.exports = { urlsForUser , generateRandomString, emailLooker };
