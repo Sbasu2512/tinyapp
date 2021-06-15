@@ -1,4 +1,5 @@
 const express = require("express");
+const authenticate = require("./routes/login")
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
@@ -8,6 +9,7 @@ const saltRounds = 10;
 const cookieSession = require('cookie-session');
 const { urlsForUser, generateRandomString } = require('./helper');
 app.set("view engine", "ejs");
+app.use(authenticate);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cookieSession({
@@ -187,44 +189,4 @@ app.post("/logout", (req, res) => {
   req.session['userid'] = null ;
   res.redirect("/login");
 });
-//which returns the template regitration.ejs
-app.get("/register", (req, res) => {
-  let user = users[req.session.userid];
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    userid: req.session.userid,
-    user: user, 
-  };
-  res.render("registration", templateVars); 
-});
-//Registering New Users
-app.post("/register", (req, res) => {
-  const errorMsg = "User email exists, please login";
-  const userId = generateRandomString();
-  const newUser = {
-    id: userId, 
-    email: req.body.email, 
-    password: bcrypt.hashSync(req.body.password, saltRounds),
-  };
-  let user;
-  userLogin = req.body;
-  for (let id in users) {
-    if (users[id].email === userLogin.email) {
-      user = users[id]; 
-      break;
-    }
-  }
-  if (user) {
-    if (user.email === userLogin.email) {
-      // redirect to homepage & early return to stop the function
-      return res.status(403).send(errorMsg);
-    }
-  }
-  users[userId] = newUser;
-  req.session['userid'] = userId
-  res.redirect("/urls");
-});
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
-});
+
