@@ -12,7 +12,6 @@ const loginRoutes = (users) => {
 /************************************/
 //which returns the template regitration.ejs
 router.get("/register", (req, res) => {
-  console.log(req.session);
   let user = users[req.session.userid];
   const templateVars = {
     userid: req.session.userid,
@@ -23,7 +22,6 @@ router.get("/register", (req, res) => {
 //Registering New Users
 router.post("/register", (req, res) => {
   const errorMsg = "User email exists, please login";
-  console.log(req.body);
   const userId = generateRandomString();
   const newUser = {
     id: userId, 
@@ -100,9 +98,7 @@ router.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-
  return router; 
-
 }
 
 module.exports = loginRoutes;
