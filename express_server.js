@@ -104,7 +104,7 @@ app.get("/urls/:shortURL", (req, res) => {
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  let user = users[req.session.userid]; //user id undefined
+  let user = users[req.session.userid]; 
   shortURL = req.params.shortURL;
   if (!user) {
     return res.send("Please Login/Register");
@@ -112,8 +112,6 @@ app.post("/urls/:shortURL/update", (req, res) => {
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exsist");
     };
-    //let longURL = ownedURLs[req.params.shortURL].longURL;
-    console.log("req.body", req.body);
     urlDatabase[shortURL] = {
       longURL: req.body.longURL,
       userID: req.session.userid
