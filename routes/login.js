@@ -44,3 +44,5 @@ router.post("/register", (req, res) => {
 router.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
+
+module.exports = router; 
