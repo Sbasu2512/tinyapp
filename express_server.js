@@ -9,13 +9,13 @@ const saltRounds = 10;
 const cookieSession = require('cookie-session');
 const { urlsForUser, generateRandomString } = require('./helper');
 app.set("view engine", "ejs");
-app.use(authenticate);
+app.use('/',authenticate);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cookieSession({
-  name: 'session',
-  keys: ['key1','key2']
-}))
+// app.use(cookieSession({
+//   name: 'session',
+//   keys: ['key1','key2']
+// }))
 //URL database
 const urlDatabase = {};
 //Create a global object called users which will be used to store and access the users in the app.
@@ -129,60 +129,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 }
   res.redirect("/urls");
 });
-//get the login page to let user login
-app.get("/login", (req, res) => {
-  res.render("login", {});
-});
+
 app.get("/user", (req, res)=>{
   if(user && userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)){
  return res.render("user",{users});
 }
 return res.redirect("/login")
 })
-// allows user to login with a username - redirects to /urls
-app.post("/login", (req, res) => {
-  //check if login credentials belong to admin
-  // accept user information
-  const userLogin = req.body;
-  let user;
-  //admin login
-  if (userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)) {
-    user = users['admin'];
-    const templateVars = {
-      user: user,
-      userid: user.userid,
-      users: users
-    };
-    req.session['userid'] = 'admin' ;
-    return res.render("user", templateVars);
-  }
-  // check if username exists
-  for (let id in users) {
-    if (users[id].email === userLogin.email) {
-      // console.log('users object has: inside if statemtn 177',users[id]);
-      user = users[id]; //id = random string
-      
-      break;
-    }
-  }
-  // if user exists & password matches
-  if (user && bcrypt.compareSync(userLogin.password, user.password)) {
-      //this log will appear in the server terminal, NOT on the browser
-      console.log(`someone logged in!`);
-      // set cookie with name = "userid" and value = users name (lowercase)
-      req.session["userid"] = user.id;
-      // redirect to homepage
-      // early return to stop the function
-      return res.redirect("/urls");
-    
-  }
-  res.status(403).send("credentials do not match");
-});
-// allows users to logout
-app.post("/logout", (req, res) => {
-  req.session['userid'] = null ;
-  res.redirect("/login");
-});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
