@@ -85,6 +85,8 @@ app.post("/urls", (req, res) => {
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
+  let shortURL;
+  let longURL;
   let user = users[req.session.userid];
   const templateVars = {
     shortURL,
@@ -92,8 +94,6 @@ app.get("/urls/:shortURL", (req, res) => {
     userid: req.session.userid,
     user
   };
-
-  
 
   if(user !== 'undefined' && user){    
     if (!ownedURLs[shortURL]) {
