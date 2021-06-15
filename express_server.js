@@ -147,31 +147,6 @@ app.get("/user", (req, res)=>{
 return res.redirect("/login")
 })
 
-
-
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
-
-
-
-/***
-
-console.log('OwnedURL is :',ownedURLs); // shows the ownedURL object
-console.log('user logged in is: ', req.session.userid);//returns current user that is logged in
-console.log('shortURL', req.params.shortURL) //returns shortURL keys assigned to it  
-
-if(req.params.shortURL === ownedURLs[req.params.shortURL]){
-  console.log("Inside the first if statement i.e., shortURL found")
-  if(user && req.session.userid === ownedURLs[req.params.shortURL].userID){
-    console.log("Inside the second if statement")
-    templateVars.longURL =  urlDatabase[req.params.shortURL].longURL;
-      templateVars.shortURL = req.params.shortURL;
-      res.render('urls_show', templateVars);
-  } else {
-    res.render('urls_show', templateVars);
-  }
-  res.send("URL does not belong to user");
-} 
-
-*/
