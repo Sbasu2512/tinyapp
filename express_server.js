@@ -95,10 +95,7 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   if(user !== 'undefined' && user){    
     //checking if the short URL is in the ownedURLs of that given user
-    if(req.params.shortURL !== ownedURLs[req.params.shortURL]){
-    return res.send("This URL does not belong to ", user.id);
-  }
-  return res.render("urls_show", templateVars);
+      return res.render("urls_show", templateVars);
   }
   res.send("Please Login/Register")
 });
