@@ -6,7 +6,7 @@ const { urlsForUser, generateRandomString, emailLooker } = require("../helper");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const homeRoutes = (users) => {
+const homeRoutes = (users, urlDatabase) => {
   //home page
   router.get("/", (req, res) => {
     let user = users[req.session.userid];
