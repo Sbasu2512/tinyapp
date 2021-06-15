@@ -3,23 +3,19 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 const cookieSession = require('cookie-session');
-const { urlsForUser } = require('./helper');
-const { generateRandomString } = require('./helper');
-
+const { urlsForUser, generateRandomString } = require('./helper');
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['key1','key2']
 }))
-
-const urlDatabase = {
-  
-};
+//URL database
+const urlDatabase = {};
 //Create a global object called users which will be used to store and access the users in the app.
 const users = {
   admin: {
@@ -28,8 +24,6 @@ const users = {
     password: bcrypt.hashSync("admin", saltRounds),
   },
 };
-
-
 // homepage (root)
 app.get("/", (req, res) => {
   let user = users[req.session.userid];
@@ -45,11 +39,6 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-// demonstrates can use HTML to display message
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 // shows the shortURL longURL pairs
 app.get("/urls", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid,urlDatabase);
@@ -63,7 +52,6 @@ app.get("/urls", (req, res) => {
   }
   res.send("Please Log in or Create a account");
 });
-
 // for creating new shortURLs
 app.get("/urls/new", (req, res) => {
   let user = users[req.session.userid];
@@ -75,7 +63,6 @@ app.get("/urls/new", (req, res) => {
   }
   res.redirect("/login");
 });
-
 // creates the shortURL and redirects to show user their newly created link
 app.post("/urls", (req, res) => {
   let user = users[req.session.userid];
@@ -91,7 +78,6 @@ app.post("/urls", (req, res) => {
   res.send("Please login/register");
   
 });
-
 // shows user their shortURL
 app.get("/urls/:shortURL", (req, res) => {
   let user = users[req.session.userid];
@@ -106,7 +92,6 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   res.send("Please Login/Register")
 });
-
 // updates URL - longURL edited for specified shortURL
 app.post("/urls/:shortURL/update", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
@@ -120,7 +105,6 @@ app.post("/urls/:shortURL/update", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 
 });
-
 // uses shortURL to redirect to longURL
 app.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
@@ -134,7 +118,6 @@ app.get("/u/:shortURL", (req, res) => {
   }
   return res.send("Please login/register");
 });
-
 // remove shortURL then redirect back to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase)
@@ -144,12 +127,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 }
   res.redirect("/urls");
 });
-
 //get the login page to let user login
 app.get("/login", (req, res) => {
   res.render("login", {});
 });
-
 app.get("/user", (req, res)=>{
   if(user && userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)){
  return res.render("user",{users});
@@ -195,13 +176,11 @@ app.post("/login", (req, res) => {
   }
   res.status(403).send("credentials do not match");
 });
-
 // allows users to logout
 app.post("/logout", (req, res) => {
   req.session['userid'] = null ;
   res.redirect("/login");
 });
-
 //which returns the template regitration.ejs
 app.get("/register", (req, res) => {
   let user = users[req.session.userid];
@@ -213,7 +192,6 @@ app.get("/register", (req, res) => {
   };
   res.render("registration", templateVars); 
 });
-
 //Registering New Users
 app.post("/register", (req, res) => {
   const errorMsg = "User email exists, please login";
@@ -232,8 +210,8 @@ app.post("/register", (req, res) => {
     }
   }
   if (user) {
-    // if email matches
     if (user.email === userLogin.email) {
+      // redirect to homepage & early return to stop the function
       return res.status(403).send(errorMsg);
     }
   }
@@ -241,7 +219,6 @@ app.post("/register", (req, res) => {
   req.session['userid'] = userId
   res.redirect("/urls");
 });
-
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);
 });
