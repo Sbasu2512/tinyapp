@@ -112,11 +112,10 @@ app.post("/urls/:shortURL/update", (req, res) => {
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exsist");
     };
-    let longURL = ownedURLs[req.params.shortURL].longURL;
-    console.log("longURl", longURL);
-    console.log("longURL in urlDatabase", urlDatabase[req.params.shortURL].longURL);
-    urlDatabase[req.params.shortURL] = {
-      longURL,
+    //let longURL = ownedURLs[req.params.shortURL].longURL;
+    console.log("req.body", req.body);
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
       userID: req.session.userid
     };
   res.redirect(`/urls/${req.params.shortURL}`);
