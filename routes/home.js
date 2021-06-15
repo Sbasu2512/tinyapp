@@ -1,10 +1,10 @@
 const express = require("express");
-const router = express.Router() ;
+const router = express.Router();
 const cookieParser = require("cookie-parser");
-const cookieSession = require('cookie-session');
-const { urlsForUser, generateRandomString, emailLooker } = require('../helper');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;  
+const cookieSession = require("cookie-session");
+const { urlsForUser, generateRandomString, emailLooker } = require("../helper");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const homeRoutes = (users) => {
   //home page
@@ -35,5 +35,19 @@ const homeRoutes = (users) => {
     }
     res.send("Please Log in or Create a account");
   });
+  // creates the shortURL and redirects to show user their newly created link
+  router.post("/urls", (req, res) => {
+    let user = users[req.session.userid];
+    const shortURL = generateRandomString();
+    const userid = req.session.userid;
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: userid,
+    };
+    if (user !== "undefined" && user) {
+      return res.redirect(`/urls/${shortURL}`);
+    }
+    res.send("Please login/register");
+  });
   return router;
-}
+};
