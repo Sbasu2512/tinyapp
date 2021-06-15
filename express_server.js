@@ -78,6 +78,7 @@ app.get("/urls/new", (req, res) => {
 
 // creates the shortURL and redirects to show user their newly created link
 app.post("/urls", (req, res) => {
+  let user = users[req.session.userid];
   const shortURL = generateRandomString();
   const userid = req.session.userid;
   urlDatabase[shortURL] = {
@@ -123,11 +124,16 @@ app.post("/urls/:shortURL/update", (req, res) => {
 // uses shortURL to redirect to longURL
 app.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  if(user.id === ownedURLs[req.params.shortURL].userID){  /*  */
-    return res.redirect(longURL);
-  } 
-  return res.send("URL do not belong to you!")
+  let user = users[req.session.userid];
+  if (user) {
+    if (user.id === ownedURLs[req.params.shortURL].userID) {
+      /*  */
+      const longURL = urlDatabase[req.params.shortURL].longURL;
+      return res.redirect(longURL);
+    }
+    return res.send("URL do not belong to you!");
+  }
+  return res.send("Please login/register");
 });
 
 // remove shortURL then redirect back to /urls
