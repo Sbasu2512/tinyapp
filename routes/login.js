@@ -6,18 +6,7 @@ const { urlsForUser, generateRandomString } = require('../helper');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 
-const users = {
-  admin: {
-    id: "admin",
-    email: "admin",
-    password: bcrypt.hashSync("admin", saltRounds),
-  },
-};
-
-router.use(cookieSession({
-  name: 'session',
-  keys: ['key1','key2']
-}))
+const loginRoutes = (users) => {
 /**************************************/
 /********* Regitering The User *******/
 /************************************/
@@ -112,4 +101,8 @@ router.post("/logout", (req, res) => {
 });
 
 
-module.exports = router; 
+ return router; 
+
+}
+
+module.exports = loginRoutes;
