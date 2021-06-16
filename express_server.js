@@ -18,13 +18,7 @@ app.use(cookieSession({
   keys: ['key1','key2']
 }))
 //Create a global object called users which will be used to store and access the users in the app.
-const users = {
-  admin: {
-    id: "admin",
-    email: "admin",
-    password: bcrypt.hashSync("admin", saltRounds),
-  },
-};
+const users = {};
 //URL database
 const urlDatabase = {};
 //activating my login routes
