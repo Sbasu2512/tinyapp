@@ -6,7 +6,7 @@ const { urlsForUser, generateRandomString, emailLooker } = require('../helper');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 
-const loginRoutes = (users) => {
+const loginRoutes = (users, urlDatabase) => {
   /**************************************/
   /********* Regitering The User *******/
   /************************************/
