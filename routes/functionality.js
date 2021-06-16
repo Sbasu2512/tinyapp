@@ -6,7 +6,7 @@ const { urlsForUser, generateRandomString, emailLooker } = require("../helper");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const func = (user, urlDatabase) => {
+const func = (users, urlDatabase) => {
 // for creating new shortURLs
 router.get("/urls/new", (req, res) => {
   let user = users[req.session.userid];
@@ -83,6 +83,8 @@ router.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 router.get("/user", (req, res)=>{
+  let user = users[req.session.userid];
+  userLogin = req.body;
   if(user && userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)){
  return res.render("user",{users});
 }
