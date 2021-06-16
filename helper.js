@@ -10,10 +10,10 @@ const urlsForUser = function(id, database) {
 };
 
 //Looks up if an email exists or not
-const emailLooker = (email) =>{
-  for (let id in users) {
-    if (users[id].email === email) {
-       return users[id]; 
+const emailLooker = (email, database) =>{
+  for (let id in database) {
+    if (database[id].email === email) {
+       return database[id]; 
     }
   }
 }
