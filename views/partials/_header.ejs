@@ -5,14 +5,15 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+      <div class="navbar-nav" style="width:100%">
         <% if(typeof user !== 'undefined' && user ){ %>  <!-- //user is logged in     -->
           <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form class="form-inline" action="/logout" method="POST">
-            <button type="submit" class="btn btn-primary" style="margin: 1em">Logout</button>
+      
+        <label for="userId" class="nav-link" style="align-self:center; margin-left: 400px; color: white;" >Logged in as: <%= user['email'] %></label>
+        <form class="form-inline ml-auto" action="/logout" method="POST">
+            <button type="submit" class="btn btn-warning" style="margin: 1em">Logout</button>
           </form>
-          <label for="userId">Logged in as: <%= user['email'] %></label>
         <%  } else {  %>   <!-- //user is not logged in -->
           <a class="nav-item nav-link" href="/register">Register</a>
           <a class="nav-item nav-link" href="/login">Login</a>
