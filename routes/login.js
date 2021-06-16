@@ -54,18 +54,6 @@ const loginRoutes = (users, urlDatabase) => {
     // accept user information
     const userLogin = req.body;
     let user;
-    //admin login
-    if (userLogin.email === "admin" && bcrypt.compareSync("admin", userLogin.password) ) {
-      user = users["admin"];
-      const templateVars = {
-        user,
-        userid: user.userid,
-        users,
-      };
-      req.session["userid"] = "admin";
-      return res.render("user", templateVars);
-      ;
-    }
     //check if user exists
     user = emailLooker(userLogin.email, users);
     // if user exists & password matches
