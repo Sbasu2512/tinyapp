@@ -27,7 +27,7 @@ router.get("/urls/:shortURL", (req, res) => {
     return res.send("Please Login/Register");
   }
   if (!ownedURLs[shortURL]) {
-    return res.send("URL does not exsist");
+    return res.send("URL does not exist");
     };
     let longURL = ownedURLs[req.params.shortURL].longURL;
     const templateVars = {
