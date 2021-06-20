@@ -13,8 +13,8 @@ const homeRoutes = (users, urlDatabase) => {
     const templateVars = {
       user: user,
     };
-    if (user !== "undefined" && user) {
-      return res.render("urls_new", templateVars);
+    if (user) {
+      return res.redirect("/urls", templateVars);
     }
     res.redirect("/login");
   });
