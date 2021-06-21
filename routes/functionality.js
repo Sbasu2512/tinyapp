@@ -61,19 +61,31 @@ router.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
   let shortURL = req.params.shortURL;
-  if (!user) {
-   return res.redirect('./login');
-  }
+  // if (!user) {
+  //  return res.redirect('./login');
+  // }
   // return res.send("Please login/register");
-  if (!ownedURLs[shortURL]) {
-    return res.send("URL does not exsist");
+  console.log("ownedURLs is: ",ownedURLs)
+  // if (!ownedURLs[shortURL]) {
+  //   return res.send("URL does not exsist");
+  //   };
+  //   let longURL = ownedURLs[req.params.shortURL].longURL ;
+  //   urlDatabase[shortURL] = {
+  //     longURL,
+  //     userID: req.session.userid
+  //   };
+  //   
+    if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    const templateVars = {
+      urlDatabase,
+      shortURL,
+      user,
     };
-    let longURL = ownedURLs[req.params.shortURL].longURL ;
-    urlDatabase[shortURL] = {
-      longURL,
-      userID: req.session.userid
-    };
-    
+    res.render('urls_show', templateVars);
+  }
     res.redirect(`${ownedURLs[req.params.shortURL].longURL}`);
 });
 // remove shortURL then redirect back to /urls
