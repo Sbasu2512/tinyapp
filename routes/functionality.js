@@ -23,9 +23,11 @@ router.get("/urls/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let shortURL = req.params.shortURL;
   let user = users[req.session.userid];
+  //if user logged in or not check
   if (!user) {
     return res.send("Please Login/Register");
   }
+  //checking if the user owns the url or not
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exist");
     };
