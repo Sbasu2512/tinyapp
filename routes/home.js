@@ -1,18 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const cookieParser = require("cookie-parser");
-const cookieSession = require("cookie-session");
-const { urlsForUser, generateRandomString, emailLooker } = require("../helper");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const { urlsForUser, generateRandomString } = require("../helper");
 
 const homeRoutes = (users, urlDatabase) => {
   //home page
   router.get("/", (req, res) => {
     let user = users[req.session.userid];
-    const templateVars = {
-      user: user,
-    };
     if (user && user !== "undefined") {
       return res.redirect( "/urls");
     }
