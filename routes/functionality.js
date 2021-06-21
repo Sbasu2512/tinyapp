@@ -69,9 +69,9 @@ router.get("/u/:shortURL", (req, res) => {
   let user = users[req.session.userid];
   let shortURL = req.params.shortURL;
   //checking if user is logged in or not
-  // if (!user) {
-  //  return res.redirect('./login');
-  // }
+  if (!user) {
+   return res.redirect('./login');
+  }
   //checking if user owns that url & also checks if the url exists for the given userid
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exsist");
