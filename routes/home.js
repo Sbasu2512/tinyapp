@@ -26,7 +26,7 @@ const homeRoutes = (users, urlDatabase) => {
     if (user !== "undefined" && user) {
       return res.render("urls_index", templateVars);
     }
-    res.send("Please Log in or Create a account");
+     res.send("Please Log in or Create a account");
   });
   // creates the shortURL and redirects to show user their newly created link
   router.post("/urls", (req, res) => {
