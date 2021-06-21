@@ -60,8 +60,7 @@ router.post("/urls/:shortURL/update", (req, res) => {
 router.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
-  shortURL = req.params.shortURL;
-  console.log(req.params.shortURL);
+  let shortURL = req.params.shortURL;
   if (!user) {
    return res.redirect('./login');
   }
@@ -69,12 +68,13 @@ router.get("/u/:shortURL", (req, res) => {
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exsist");
     };
+    let longURL = ownedURLs[req.params.shortURL].longURL ;
     urlDatabase[shortURL] = {
-      longURL: req.body.longURL,
+      longURL,
       userID: req.session.userid
     };
     
-    res.redirect(`/urls/${req.params.shortURL}`);
+    res.redirect(`${ownedURLs[req.params.shortURL].longURL}`);
 });
 // remove shortURL then redirect back to /urls
 router.post("/urls/:shortURL/delete", (req, res) => {
