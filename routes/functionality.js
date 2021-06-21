@@ -25,12 +25,7 @@ router.get("/urls/:shortURL", (req, res) => {
   //checking if the user owns the url or not
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exist");
-    };
-    //checking if the short url is owned by the user 
-  if(urlDatabase[shortURL].userID !== req.session.userid){
-    return res.send("User does not own this URL");
-  }
-  
+    };  
     let longURL = ownedURLs[req.params.shortURL].longURL;
     const templateVars = {
       shortURL,
