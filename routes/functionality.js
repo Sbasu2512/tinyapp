@@ -60,10 +60,21 @@ router.post("/urls/:shortURL/update", (req, res) => {
 router.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
+  shortURL = req.params.shortURL;
+  console.log(req.params.shortURL);
   if (!user) {
    return res.redirect('./login');
   }
-  return res.send("Please login/register");
+  // return res.send("Please login/register");
+  if (!ownedURLs[shortURL]) {
+    return res.send("URL does not exsist");
+    };
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: req.session.userid
+    };
+    
+    res.redirect(`/urls/${req.params.shortURL}`);
 });
 // remove shortURL then redirect back to /urls
 router.post("/urls/:shortURL/delete", (req, res) => {
