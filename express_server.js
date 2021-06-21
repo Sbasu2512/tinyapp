@@ -6,11 +6,8 @@ const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const bcrypt = require('bcrypt');
-const saltRounds = 10;  
 const cookieSession = require('cookie-session');
-const { urlsForUser, generateRandomString, emailLooker } = require('./helper');
-const {database, users} = require('./routes/database');
+const {urlDatabase, users} = require('./routes/database');
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -19,9 +16,9 @@ app.use(cookieSession({
   keys: ['key1','key2']
 }))
 //activating my database object
-app.use('/',database);
+// app.use('/',database);
 //activate my user object
-app.use('/',users);
+// app.use('/',users);
 //activating my login routes
 app.use('/',loginRoutes(users, urlDatabase));
 // homepage (root)
