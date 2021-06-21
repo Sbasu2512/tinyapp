@@ -31,6 +31,11 @@ router.get("/urls/:shortURL", (req, res) => {
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exist");
     };
+    //checking if the short url is owned by the user 
+  if(urlDatabase[shortURL].userID !== req.session.userid){
+    return res.send("User does not own this URL");
+  }
+  
     let longURL = ownedURLs[req.params.shortURL].longURL;
     const templateVars = {
       shortURL,
@@ -63,31 +68,19 @@ router.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
   let user = users[req.session.userid];
   let shortURL = req.params.shortURL;
+  //checking if user is logged in or not
   // if (!user) {
   //  return res.redirect('./login');
   // }
-  // return res.send("Please login/register");
-  console.log("ownedURLs is: ",ownedURLs)
-  // if (!ownedURLs[shortURL]) {
-  //   return res.send("URL does not exsist");
-  //   };
-  //   let longURL = ownedURLs[req.params.shortURL].longURL ;
-  //   urlDatabase[shortURL] = {
-  //     longURL,
-  //     userID: req.session.userid
-  //   };
-  //   
-    if (urlDatabase[shortURL]) {
-    const longURL = urlDatabase[shortURL].longURL;
-    res.redirect(longURL);
-  } else {
-    const templateVars = {
-      urlDatabase,
-      shortURL,
-      user,
+  //checking if user owns that url & also checks if the url exists for the given userid
+  if (!ownedURLs[shortURL]) {
+    return res.send("URL does not exsist");
     };
-    res.render('urls_show', templateVars);
-  }
+    let longURL = ownedURLs[req.params.shortURL].longURL ;
+    urlDatabase[shortURL] = {
+      longURL,
+      userID: req.session.userid
+    };  
     res.redirect(`${ownedURLs[req.params.shortURL].longURL}`);
 });
 // remove shortURL then redirect back to /urls
