@@ -72,7 +72,7 @@ router.get("/u/:shortURL", (req, res) => {
   if (!user) {
    return res.redirect('./login');
   }
-  //checking if user owns that url & also checks if the url exists for the given userid
+  //checking if url for a shortURL exists or not and belongs to the user logged in!
   if (!ownedURLs[shortURL]) {
     return res.send("URL does not exsist");
     };
@@ -99,15 +99,6 @@ router.post("/urls/:shortURL/delete", (req, res) => {
   }
   res.redirect("/urls");
 });
-
-router.get("/user", (req, res)=>{
-  let user = users[req.session.userid];
-  userLogin = req.body;
-  if(user && userLogin.email === "admin" &&  bcrypt.compareSync("admin", userLogin.password)){
- return res.render("user",{users});
-}
-return res.redirect("/login")
-})
 
 return router;
 }
