@@ -64,7 +64,7 @@ const func = (users, urlDatabase) => {
   // uses shortURL to redirect to longURL. non logged in users should be able to use it
   router.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL].longURL;
-    
+
     if (longURL.includes("http")) {
       return res.redirect(longURL);
     } else {
@@ -74,14 +74,17 @@ const func = (users, urlDatabase) => {
   // remove shortURL then redirect back to /urls
   router.post("/urls/:shortURL/delete", (req, res) => {
     const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-    let user = users[req.session.userid]; //user id
-    let shortURL = req.params.shortURL;
+    const user = users[req.session.userid]; 
+    const shortURL = req.params.shortURL;
+    
     if (!user) {
       return res.send("Please Login/Register");
     }
+
     if (!ownedURLs[shortURL]) {
       return res.send("URL does not exsist");
     }
+    //double checking if the user owns the said url or not
     if (user.id === ownedURLs[shortURL].userID) {
       delete urlDatabase[shortURL];
     }
