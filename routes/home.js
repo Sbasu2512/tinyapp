@@ -1,5 +1,8 @@
+//package import
 const express = require("express");
+//middleware
 const router = express.Router();
+//local imports
 const { urlsForUser, generateRandomString } = require("../helper");
 
 const homeRoutes = (users, urlDatabase) => {
