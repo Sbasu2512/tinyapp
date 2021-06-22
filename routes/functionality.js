@@ -44,14 +44,17 @@ const func = (users, urlDatabase) => {
   // updates URL - longURL edited for specified shortURL
   router.post("/urls/:shortURL/update", (req, res) => {
     const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-    let user = users[req.session.userid];
-    shortURL = req.params.shortURL;
+    const user = users[req.session.userid];
+    const shortURL = req.params.shortURL;
+    //checking if user has logged in/not
     if (!user) {
       return res.send("Please Login/Register");
     }
+    //checking if user owns the url or not
     if (!ownedURLs[shortURL]) {
       return res.send("URL does not exsist");
     }
+
     urlDatabase[shortURL] = {
       longURL: req.body.longURL,
       userID: req.session.userid,
@@ -61,6 +64,7 @@ const func = (users, urlDatabase) => {
   // uses shortURL to redirect to longURL. non logged in users should be able to use it
   router.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL].longURL;
+    
     if (longURL.includes("http")) {
       return res.redirect(longURL);
     } else {
