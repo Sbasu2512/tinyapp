@@ -8,7 +8,8 @@ const { urlsForUser, generateRandomString } = require("../helper");
 const homeRoutes = (users, urlDatabase) => {
   //home page
   router.get("/", (req, res) => {
-    let user = users[req.session.userid];
+    const user = users[req.session.userid];
+    //checking if user has logged in or not
     if (user && user !== "undefined") {
       return res.redirect( "/urls");
     }
@@ -21,11 +22,13 @@ const homeRoutes = (users, urlDatabase) => {
   // shows the shortURL longURL pairs
   router.get("/urls", (req, res) => {
     const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-    let user = users[req.session.userid]; //we take the name not the value from res.cookie()
+    const user = users[req.session.userid]; 
+    
     const templateVars = {
       user: user,
       urls: ownedURLs,
     };
+    
     if (user !== "undefined" && user) {
       return res.render("urls_index", templateVars);
     }
