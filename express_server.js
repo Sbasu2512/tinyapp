@@ -1,13 +1,16 @@
+//package imports
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
+//local imports
 const loginRoutes = require("./routes/login");
 const homeRoutes = require("./routes/home");
 const func = require("./routes/functionality");
-const app = express();
-const PORT = process.env.PORT || 8080; // default port 8080
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const cookieSession = require('cookie-session');
 const {urlDatabase, users} = require('./routes/database');
+//constants
+const PORT = process.env.PORT || 8080; // default port 8080
+//Middlewares
+const app = express();
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
