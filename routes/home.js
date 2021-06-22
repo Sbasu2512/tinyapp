@@ -42,6 +42,13 @@ const homeRoutes = (users, urlDatabase) => {
     }
     res.send("Please login/register");
   });
+  //adding an test case where it gives error if url does not exist
+  app.get('*', (req, res) => {
+    const templateVars = {
+      error: '404 not found!'
+    };
+    res.render('404', templateVars);
+  });
   return router;
 };
 module.exports = homeRoutes ;
