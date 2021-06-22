@@ -8,7 +8,7 @@ const loginRoutes = (users, urlDatabase) => {
   //registering the user
   router.get("/register", (req, res) => {
     const user = users[req.session.userid];
-    
+
     const templateVars = {
       userid: req.session.userid,
       user: user,
@@ -20,14 +20,15 @@ const loginRoutes = (users, urlDatabase) => {
   router.post("/register", (req, res) => {
     const errorMsg = "User email exists, please login";
     const userId = generateRandomString();
-    userLogin = req.body;
+    const userLogin = req.body;
     const newUser = {
       id: userId,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, saltRounds),
     };
-    let user = emailLooker(userLogin.email, users);
 
+    let user = emailLooker(userLogin.email, users);
+    //checking if user email exists or not
     if (user) {
       if (user.email === userLogin.email) {
         // send error msg & early return to stop the function
@@ -38,10 +39,7 @@ const loginRoutes = (users, urlDatabase) => {
     req.session["userid"] = userId;
     res.redirect("/urls");
   });
-  /*********************************/
-  /***********Login****************/
-  /*******************************/
-  //get the login page to let user login
+  //login
   router.get("/login", (req, res) => {
     res.render("login", {});
   });
