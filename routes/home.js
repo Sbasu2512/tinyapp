@@ -44,7 +44,7 @@ const homeRoutes = (users, urlDatabase) => {
       longURL: req.body.longURL,
       userID: userid,
     };
-    
+
     if (user !== "undefined" && user) {
       return res.redirect(`/urls/${shortURL}`);
     }
