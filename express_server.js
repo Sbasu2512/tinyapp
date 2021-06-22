@@ -21,10 +21,7 @@ app.use(
     keys: ["key1", "key2"],
   })
 );
-//activating my database object
-// app.use('/',database);
-//activate my user object
-// app.use('/',users);
+
 //activating my login routes
 app.use("/", loginRoutes(users, urlDatabase));
 // homepage (root)
