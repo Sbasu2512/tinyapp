@@ -1,7 +1,11 @@
+//package imports
 const express = require("express");
-const router = express.Router() ;
-const { generateRandomString, emailLooker } = require('../helper');
 const bcrypt = require('bcrypt');
+//middleware
+const router = express.Router() ;
+//local imports
+const { generateRandomString, emailLooker } = require('../helper');
+//constants
 const saltRounds = 10;  
 
 const loginRoutes = (users, urlDatabase) => {
