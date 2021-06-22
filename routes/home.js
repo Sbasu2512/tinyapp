@@ -36,13 +36,15 @@ const homeRoutes = (users, urlDatabase) => {
   });
   // creates the shortURL and redirects to show user their newly created link
   router.post("/urls", (req, res) => {
-    let user = users[req.session.userid];
+    const user = users[req.session.userid];
     const shortURL = generateRandomString();
     const userid = req.session.userid;
+   //saving short url in urlDatabase
     urlDatabase[shortURL] = {
       longURL: req.body.longURL,
       userID: userid,
     };
+    
     if (user !== "undefined" && user) {
       return res.redirect(`/urls/${shortURL}`);
     }
