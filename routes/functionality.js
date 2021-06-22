@@ -1,6 +1,9 @@
+//package imports
 const express = require("express");
 const router = express.Router();
-const { urlsForUser, generateRandomString, emailLooker } = require("../helper");
+//local imports
+const { urlsForUser} = require("../helper");
+
 const func = (users, urlDatabase) => {
 // for creating new shortURLs
 router.get("/urls/new", (req, res) => {
@@ -55,9 +58,6 @@ router.post("/urls/:shortURL/update", (req, res) => {
 });
 // uses shortURL to redirect to longURL. non logged in users should be able to use it
 router.get("/u/:shortURL", (req, res) => {
-  //const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  //let user = users[req.session.userid];
-  //let shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL].longURL;
   if (longURL.includes('http')) {
     return res.redirect(longURL);
