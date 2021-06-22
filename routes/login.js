@@ -45,7 +45,6 @@ const loginRoutes = (users, urlDatabase) => {
   });
   // allows user to login with a username - redirects to /urls
   router.post("/login", (req, res) => {
-    //check if login credentials belong to admin
     // accept user information
     const userLogin = req.body;
     let user;
