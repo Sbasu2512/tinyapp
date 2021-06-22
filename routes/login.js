@@ -5,16 +5,15 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;  
 
 const loginRoutes = (users, urlDatabase) => {
-  /**************************************/
-  /********* Regitering The User *******/
-  /************************************/
-  //which returns the template regitration.ejs
+  //registering the user
   router.get("/register", (req, res) => {
-    let user = users[req.session.userid];
+    const user = users[req.session.userid];
+    
     const templateVars = {
       userid: req.session.userid,
       user: user,
     };
+
     res.render("registration", templateVars);
   });
   //Registering New Users
