@@ -22,8 +22,8 @@ const func = (users, urlDatabase) => {
   // shows user their shortURL
   router.get("/urls/:shortURL", (req, res) => {
     const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-    let shortURL = req.params.shortURL;
-    let user = users[req.session.userid];
+    const shortURL = req.params.shortURL;
+    const user = users[req.session.userid];
     //if user logged in or not check
     if (!user) {
       return res.send("Please Login/Register");
@@ -32,7 +32,7 @@ const func = (users, urlDatabase) => {
     if (!ownedURLs[shortURL]) {
       return res.send("URL does not exist");
     }
-    let longURL = ownedURLs[req.params.shortURL].longURL;
+    const longURL = ownedURLs[req.params.shortURL].longURL;
     const templateVars = {
       shortURL,
       longURL,
