@@ -15,7 +15,7 @@ const func = (users, urlDatabase) => {
     };
     //checking if user has logged in or not
     if (user !== "undefined" && user) {
-      res.render("urls_new", templateVars);
+      return res.render("urls_new", templateVars);
     }
     res.redirect("/login");
   });
@@ -39,7 +39,7 @@ const func = (users, urlDatabase) => {
       userid: req.session.userid,
       user,
     };
-    return res.render("urls_show", templateVars);
+    res.render("urls_show", templateVars);
   });
   // updates URL - longURL edited for specified shortURL
   router.post("/urls/:shortURL/update", (req, res) => {
