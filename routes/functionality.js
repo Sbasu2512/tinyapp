@@ -53,25 +53,17 @@ router.post("/urls/:shortURL/update", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 
 });
-// uses shortURL to redirect to longURL
+// uses shortURL to redirect to longURL. non logged in users should be able to use it
 router.get("/u/:shortURL", (req, res) => {
   const ownedURLs = urlsForUser(req.session.userid, urlDatabase);
-  let user = users[req.session.userid];
-  let shortURL = req.params.shortURL;
-  //checking if user is logged in or not
-  if (!user) {
-   return res.redirect('./login');
+  //let user = users[req.session.userid];
+  //let shortURL = req.params.shortURL;
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  if (longURL.includes('http')) {
+    return res.redirect(longURL);
+  } else {
+    return res.redirect(`https://${longURL}`);
   }
-  //checking if url for a shortURL exists or not and belongs to the user logged in!
-  if (!ownedURLs[shortURL]) {
-    return res.send("URL does not exsist");
-    };
-    let longURL = ownedURLs[req.params.shortURL].longURL ;
-    urlDatabase[shortURL] = {
-      longURL,
-      userID: req.session.userid
-    };  
-    res.redirect(`${ownedURLs[req.params.shortURL].longURL}`);
 });
 // remove shortURL then redirect back to /urls
 router.post("/urls/:shortURL/delete", (req, res) => {
